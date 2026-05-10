@@ -8,9 +8,7 @@ import 'auth_change_notifier.dart';
 import 'routes.dart';
 
 // ─── Feature routes ───────────────────────────────────────────────────────────
-// Importe e adicione aqui as rotas de cada feature conforme forem criadas:
-//
-// import '../../features/auth/routes/auth_routes.dart';
+import '../../features/auth/routes/auth_routes.dart';
 // import '../../features/transactions/routes/transaction_routes.dart';
 // ---------------------------------------------------------------------------
 
@@ -30,10 +28,7 @@ final GoRouter appRouter = GoRouter(
     ),
 
     // ── Auth ──────────────────────────────────────────────────────────────
-    GoRoute(
-      path: Routes.login.path,
-      builder: (_, _) => const _PlaceholderPage(label: 'Login'),
-    ),
+    ...authRoutes,
 
     // ── Home ──────────────────────────────────────────────────────────────
     GoRoute(
