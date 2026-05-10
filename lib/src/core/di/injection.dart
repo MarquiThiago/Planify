@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../router/auth_change_notifier.dart';
 import 'injection.config.dart';
 
 /// Instância global do GetIt — use `getIt<T>()` em qualquer lugar do app.
@@ -16,4 +17,8 @@ Future<void> configureDependencies() async => getIt.init();
 abstract class CoreModule {
   @lazySingleton
   SupabaseClient get supabaseClient => Supabase.instance.client;
+
+  @lazySingleton
+  AuthChangeNotifier get authChangeNotifier =>
+      AuthChangeNotifier(GetIt.instance<SupabaseClient>());
 }
