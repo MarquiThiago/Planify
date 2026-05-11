@@ -86,14 +86,14 @@ class _Initials extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.indigo100,
+      color: AppColors.primary100,
       child: Center(
         child: Text(
           initials,
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: FontWeight.w600,
-            color: AppColors.indigo700,
+            color: AppColors.primary800,
           ),
         ),
       ),
