@@ -1,10 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:planify/src/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:planify/src/features/auth/presentation/bloc/auth_event.dart';
 
 import '../startup/app_startup.dart';
-import 'auth_change_notifier.dart';
+import 'auth_cubit.dart';
 import 'routes.dart';
 
 // ─── Feature routes ───────────────────────────────────────────────────────────
@@ -18,14 +21,11 @@ import '../../features/auth/routes/auth_routes.dart';
 /// acessada, já após [configureDependencies()] ter sido chamado no main.
 final GoRouter appRouter = GoRouter(
   initialLocation: Routes.splash.path,
-  refreshListenable: GetIt.instance<AuthChangeNotifier>(),
+  refreshListenable: _AuthRefreshListenable(GetIt.instance<AuthCubit>().stream),
   redirect: _redirect,
   routes: [
     // ── Splash ────────────────────────────────────────────────────────────
-    GoRoute(
-      path: Routes.splash.path,
-      builder: (_, _) => const _SplashPage(),
-    ),
+    GoRoute(path: Routes.splash.path, builder: (_, _) => const _SplashPage()),
 
     // ── Auth ──────────────────────────────────────────────────────────────
     ...authRoutes,
@@ -61,11 +61,12 @@ String? _redirect(BuildContext context, GoRouterState state) {
   final location = state.matchedLocation;
   final splashDone = AppStartup.splashCompleted;
   final isAuthenticated =
-      GetIt.instance<SupabaseClient>().auth.currentSession != null;
+      GetIt.instance<AuthCubit>().state is AuthAuthenticated;
 
   final currentRoute = Routes.values.firstWhere(
     (r) => r.path == location,
-    orElse: () => Routes.home, // rota com parâmetro dinâmico — trata como protegida
+    orElse: () =>
+        Routes.home, // rota com parâmetro dinâmico — trata como protegida
   );
 
   // 1. Força splash apenas na primeira abertura (não no hot reload).
@@ -119,9 +120,24 @@ class _SplashPageState extends State<_SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}
+
+// ─── Auth refresh listenable ──────────────────────────────────────────────────
+
+/// Adapta o stream do [AuthCubit] para o [Listenable] exigido pelo GoRouter.
+class _AuthRefreshListenable extends ChangeNotifier {
+  _AuthRefreshListenable(Stream<AuthCubitState> stream) {
+    _subscription = stream.listen((_) => notifyListeners());
+  }
+
+  late final StreamSubscription<AuthCubitState> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }
 
@@ -136,7 +152,14 @@ class _PlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(label)),
+      appBar: AppBar(
+        title: Text(label),
+        leading: IconButton(
+          onPressed: () =>
+              GetIt.instance<AuthBloc>().add(const SignOutRequested()),
+          icon: const Icon(Icons.logout),
+        ),
+      ),
       body: Center(child: Text(label)),
     );
   }
