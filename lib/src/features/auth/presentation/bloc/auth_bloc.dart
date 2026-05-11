@@ -10,6 +10,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInWithEmailRequested>(_onSignInWithEmail);
     on<SignInWithGoogleRequested>(_onSignInWithGoogle);
     on<SignInWithAppleRequested>(_onSignInWithApple);
+    on<SignOutRequested>(_onSignOut);
   }
 
   final AuthRepository _repository;
@@ -55,6 +56,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(const AuthInitial());
     } catch (_) {
       emit(const AuthError('Não foi possível abrir o login com Apple.'));
+    }
+  }
+
+  Future<void> _onSignOut(
+    SignOutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      await _repository.signOut();
+    } catch (_) {
+      emit(const AuthError('Não foi possível sair. Tente novamente.'));
     }
   }
 }

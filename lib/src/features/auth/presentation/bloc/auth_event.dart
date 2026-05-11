@@ -8,10 +8,7 @@ sealed class AuthEvent extends Equatable {
 }
 
 final class SignInWithEmailRequested extends AuthEvent {
-  const SignInWithEmailRequested({
-    required this.email,
-    required this.password,
-  });
+  const SignInWithEmailRequested({required this.email, required this.password});
 
   final String email;
   final String password;
@@ -26,4 +23,8 @@ final class SignInWithGoogleRequested extends AuthEvent {
 
 final class SignInWithAppleRequested extends AuthEvent {
   const SignInWithAppleRequested();
+}
+
+final class SignOutRequested extends AuthEvent {
+  const SignOutRequested();
 }
