@@ -1,4 +1,4 @@
-import 'package:app_links/app_links.dart';
+//import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -22,10 +22,10 @@ Future<void> main() async {
 }
 
 void _listenToDeepLinks() {
-  final appLinks = AppLinks();
-  appLinks.uriLinkStream.listen((uri) {
-    Supabase.instance.client.auth.getSessionFromUrl(uri);
-  });
+  //final appLinks = AppLinks();
+  //appLinks.uriLinkStream.listen((uri) {
+  //  Supabase.instance.client.auth.getSessionFromUrl(uri);
+  //});
 }
 
 class App extends StatelessWidget {
