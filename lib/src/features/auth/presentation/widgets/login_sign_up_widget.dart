@@ -6,33 +6,35 @@ import '../auth_strings.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 
-class LoginInitialWidget extends StatefulWidget {
-  const LoginInitialWidget({super.key});
+class LoginSignUpWidget extends StatefulWidget {
+  const LoginSignUpWidget({super.key});
 
   @override
-  State<LoginInitialWidget> createState() => _LoginInitialWidgetState();
+  State<LoginSignUpWidget> createState() => _LoginSignUpWidgetState();
 }
 
-class _LoginInitialWidgetState extends State<LoginInitialWidget> {
+class _LoginSignUpWidgetState extends State<LoginSignUpWidget> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _submitEmail() {
+  void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     context.read<AuthBloc>().add(
-      SignInWithEmailRequested(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      ),
-    );
+          SignUpWithEmailRequested(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          ),
+        );
   }
 
   @override
@@ -46,14 +48,14 @@ class _LoginInitialWidgetState extends State<LoginInitialWidget> {
           children: [
             const SizedBox(height: AuthDimens.spacingXLarge),
             Text(
-              AuthStrings.pageTitle,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+              AuthStrings.signUpPageTitle,
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: AuthDimens.spacingSmall),
             Text(
-              AuthStrings.pageSubtitle,
+              AuthStrings.signUpPageSubtitle,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: AuthDimens.spacingLarge),
@@ -86,19 +88,41 @@ class _LoginInitialWidgetState extends State<LoginInitialWidget> {
                 return null;
               },
             ),
+            const SizedBox(height: AuthDimens.spacing),
+            TextFormField(
+              controller: _confirmPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: AuthStrings.confirmPasswordLabel,
+                hintText: AuthStrings.confirmPasswordHint,
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Confirme sua senha';
+                }
+                if (value != _passwordController.text) {
+                  return AuthStrings.passwordMismatchError;
+                }
+                return null;
+              },
+            ),
             const SizedBox(height: AuthDimens.spacingLarge),
             SizedBox(
               height: AuthDimens.buttonHeight,
               child: FilledButton(
-                onPressed: _submitEmail,
-                child: const Text(AuthStrings.signInButton),
+                onPressed: _submit,
+                child: const Text(AuthStrings.createAccountButton),
               ),
             ),
             const SizedBox(height: AuthDimens.spacing),
-            TextButton(
-              onPressed: () =>
-                  context.read<AuthBloc>().add(const SignUpModeEntered()),
-              child: const Text(AuthStrings.createAccountButton),
+            SizedBox(
+              height: AuthDimens.buttonHeight,
+              child: TextButton(
+                onPressed: () => context
+                    .read<AuthBloc>()
+                    .add(const SignUpModeCancelled()),
+                child: const Text(AuthStrings.backToLoginButton),
+              ),
             ),
             const SizedBox(height: AuthDimens.spacingLarge),
             _OrDivider(),
@@ -106,9 +130,9 @@ class _LoginInitialWidgetState extends State<LoginInitialWidget> {
             SizedBox(
               height: AuthDimens.buttonHeight,
               child: OutlinedButton.icon(
-                onPressed: () => context.read<AuthBloc>().add(
-                  const SignInWithGoogleRequested(),
-                ),
+                onPressed: () => context
+                    .read<AuthBloc>()
+                    .add(const SignInWithGoogleRequested()),
                 icon: const Icon(Icons.g_mobiledata),
                 label: const Text(AuthStrings.googleButton),
               ),
@@ -117,9 +141,9 @@ class _LoginInitialWidgetState extends State<LoginInitialWidget> {
             SizedBox(
               height: AuthDimens.buttonHeight,
               child: OutlinedButton.icon(
-                onPressed: () => context.read<AuthBloc>().add(
-                  const SignInWithAppleRequested(),
-                ),
+                onPressed: () => context
+                    .read<AuthBloc>()
+                    .add(const SignInWithAppleRequested()),
                 icon: const Icon(Icons.apple),
                 label: const Text(AuthStrings.appleButton),
               ),

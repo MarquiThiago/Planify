@@ -15,7 +15,11 @@ final class AuthLoading extends AuthState {
   const AuthLoading();
 }
 
-/// Emitido quando um erro ocorre durante o sign-in.
+final class AuthSignUpMode extends AuthState {
+  const AuthSignUpMode();
+}
+
+/// Emitido quando um erro ocorre durante o sign-in ou sign-up.
 /// A navegação em caso de sucesso é tratada pelo [AuthChangeNotifier] + GoRouter redirect.
 final class AuthError extends AuthState {
   const AuthError(this.message);

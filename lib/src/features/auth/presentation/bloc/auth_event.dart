@@ -28,3 +28,21 @@ final class SignInWithAppleRequested extends AuthEvent {
 final class SignOutRequested extends AuthEvent {
   const SignOutRequested();
 }
+
+final class SignUpModeEntered extends AuthEvent {
+  const SignUpModeEntered();
+}
+
+final class SignUpModeCancelled extends AuthEvent {
+  const SignUpModeCancelled();
+}
+
+final class SignUpWithEmailRequested extends AuthEvent {
+  const SignUpWithEmailRequested({required this.email, required this.password});
+
+  final String email;
+  final String password;
+
+  @override
+  List<Object?> get props => [email, password];
+}

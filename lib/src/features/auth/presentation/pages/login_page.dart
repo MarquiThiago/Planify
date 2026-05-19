@@ -7,6 +7,7 @@ import '../bloc/auth_state.dart';
 import '../widgets/login_error_widget.dart';
 import '../widgets/login_initial_widget.dart';
 import '../widgets/login_loading_widget.dart';
+import '../widgets/login_sign_up_widget.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -33,6 +34,7 @@ class _LoginBody extends StatelessWidget {
       builder: (context, state) {
         return switch (state) {
           AuthInitial() => const LoginInitialWidget(),
+          AuthSignUpMode() => const LoginSignUpWidget(),
           AuthLoading() => const LoginLoadingWidget(),
           AuthError(:final message) => LoginErrorWidget(message: message),
         };

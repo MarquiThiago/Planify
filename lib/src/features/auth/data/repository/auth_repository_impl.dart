@@ -25,6 +25,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<UserEntity> signUpWithEmail(String email, String password) async {
+    final response = await _client.auth.signUp(
+      email: email,
+      password: password,
+    );
+    final user = response.user;
+    if (user == null) throw Exception('Falha ao criar conta.');
+    return UserModel.fromSupabaseUser(user).toEntity();
+  }
+
+  @override
   Future<void> signInWithGoogle() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google,
