@@ -53,11 +53,10 @@ dependencies:
 
   # Loading Skeleton
   skeletonizer: ^2.1.3
-  google_fonts: ^6.3.2
   app_links: ^6.4.1
 
   # Google Fonts
-  google_fonts: ^6.2.1
+  google_fonts: ^6.3.2
 
   # SVG Support
   flutter_svg: ^2.0.10
