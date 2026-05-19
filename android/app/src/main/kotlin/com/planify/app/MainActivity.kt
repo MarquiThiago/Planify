@@ -1,4 +1,4 @@
-package com.example.planify
+package com.planify.app
 
 import io.flutter.embedding.android.FlutterActivity
 
