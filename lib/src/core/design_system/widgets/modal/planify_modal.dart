@@ -26,84 +26,93 @@ class PlanifyModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppRadius.xl),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header
-          if (showHeader)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(width: 40),
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Icon(
-                      Icons.close,
-                      color: context.colors.onSurfaceVariant,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Header
+        if (showHeader)
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(width: 40),
+                    Container(
+                      width: 60,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: context.colors.outline.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-
-          // Divider
-          if (showHeader)
-            Divider(
-              color: context.colors.outline.withValues(alpha: 0.2),
-              height: 1,
-            ),
-
-          // Conteúdo
-          Padding(
-            padding: padding ?? const EdgeInsets.all(AppSpacing.lg),
-            child: child,
-          ),
-
-          // Botões (se houver ações)
-          if (onConfirm != null || onCancel != null) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Column(
-                children: [
-                  if (onConfirm != null)
-                    PlanifyButton.primary(
-                      label: confirmLabel ?? 'Confirm',
-                      onTap: () {
-                        Navigator.pop(context);
-                        onConfirm?.call();
-                      },
-                    ),
-                  if (onCancel != null) ...[
-                    const SizedBox(height: AppSpacing.md),
-                    PlanifyButton.outline(
-                      label: cancelLabel ?? 'Cancel',
-                      onTap: () {
-                        Navigator.pop(context);
-                        onCancel?.call();
-                      },
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(
+                        Icons.close,
+                        color: context.colors.onSurfaceVariant,
+                      ),
                     ),
                   ],
-                ],
+                ),
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        // Divider
+        if (showHeader)
+          Divider(
+            color: context.colors.outline.withValues(alpha: 0.2),
+            height: 1,
+          ),
+
+        // Conteúdo
+        Padding(
+          padding: padding ?? const EdgeInsets.all(AppSpacing.lg),
+          child: child,
+        ),
+
+        // Botões (se houver ações)
+        if (onConfirm != null || onCancel != null) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Column(
+              children: [
+                if (onConfirm != null)
+                  PlanifyButton.primary(
+                    label: confirmLabel ?? 'Confirm',
+                    onTap: () {
+                      Navigator.pop(context);
+                      onConfirm?.call();
+                    },
+                  ),
+                if (onCancel != null) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  PlanifyButton.outline(
+                    label: cancelLabel ?? 'Cancel',
+                    onTap: () {
+                      Navigator.pop(context);
+                      onCancel?.call();
+                    },
+                  ),
+                ],
+              ],
             ),
-            const SizedBox(height: AppSpacing.lg),
-          ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
         ],
-      ),
+      ],
     );
   }
 }
@@ -207,12 +216,11 @@ Future<T?> showPlanifyModal<T>(
       child: child,
     ),
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(AppRadius.xl),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
     ),
-    backgroundColor: Colors.transparent,
+    backgroundColor: context.colors.surface,
     isScrollControlled: true,
+    showDragHandle: false,
   );
 }
 
