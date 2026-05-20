@@ -12,7 +12,7 @@ import 'routes.dart';
 
 // ─── Feature routes ───────────────────────────────────────────────────────────
 import '../../features/auth/routes/auth_routes.dart';
-// import '../../features/transactions/routes/transaction_routes.dart';
+import '../../features/home/routes/home_routes.dart';
 // ---------------------------------------------------------------------------
 
 /// Instância global do GoRouter.
@@ -31,10 +31,7 @@ final GoRouter appRouter = GoRouter(
     ...authRoutes,
 
     // ── Home ──────────────────────────────────────────────────────────────
-    GoRoute(
-      path: Routes.home.path,
-      builder: (_, _) => const _PlaceholderPage(label: 'Home'),
-    ),
+    ...homeRoutes,
 
     // ── Transactions ──────────────────────────────────────────────────────
     GoRoute(

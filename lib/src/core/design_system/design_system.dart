@@ -36,5 +36,8 @@ export 'widgets/icon_picker/planify_icon_picker.dart';
 // Widgets - Modais
 export 'widgets/modal/planify_modal.dart';
 
+// Widgets - Navegação
+export 'widgets/navigation/planify_bottom_nav_bar.dart';
+
 // Widgets - SVG Icons
 export 'widgets/svg/planify_svg_icon.dart';
