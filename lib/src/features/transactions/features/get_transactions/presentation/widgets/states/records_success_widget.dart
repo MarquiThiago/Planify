@@ -5,10 +5,7 @@ import '../../../domain/entities/transaction_entity.dart';
 import '../../../presentation/get_transaction_strings.dart';
 
 class RecordsSuccessWidget extends StatelessWidget {
-  const RecordsSuccessWidget({
-    super.key,
-    required this.transactions,
-  });
+  const RecordsSuccessWidget({super.key, required this.transactions});
 
   final List<TransactionEntity> transactions;
 
@@ -61,8 +58,8 @@ class RecordsSuccessWidget extends StatelessWidget {
             Text(
               GetTransactionStrings.emptySubtitle,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: context.colors.onSurfaceVariant,
-                  ),
+                color: context.colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -90,12 +87,12 @@ class RecordsSuccessWidget extends StatelessWidget {
               child: Text(
                 dateKey,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: context.colors.onSurfaceVariant,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  color: context.colors.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-            ...dayTransactions.map(
+            ...dayTransactions.reversed.map(
               (t) => Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                 child: PlanifyTransactionItem(
