@@ -17,17 +17,18 @@ Future<bool?> showCreateTransactionBottomSheet(BuildContext context) {
   final screenHeight = MediaQuery.of(context).size.height;
 
   return showModalBottomSheet<bool>(
+    showDragHandle: false,
+    useSafeArea: true,
     context: context,
     isScrollControlled: true,
     backgroundColor: context.colors.surface,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(AppRadius.xl),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
     ),
     builder: (_) => BlocProvider(
-      create: (_) => getIt<CreateTransactionBloc>()
-        ..add(const CreateTransactionInitialized()),
+      create: (_) =>
+          getIt<CreateTransactionBloc>()
+            ..add(const CreateTransactionInitialized()),
       child: SizedBox(
         height: screenHeight * TransactionDimens.sheetHeightFactor,
         child: const _CreateTransactionSheet(),
@@ -62,9 +63,9 @@ class _CreateTransactionSheetState extends State<_CreateTransactionSheet> {
     return BlocConsumer<CreateTransactionBloc, CreateTransactionState>(
       listener: (context, state) {
         if (state is CreateTransactionReady && state.submitError != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.submitError!)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.submitError!)));
         }
         if (state is CreateTransactionSuccess) {
           Navigator.of(context).pop(true);
@@ -72,15 +73,15 @@ class _CreateTransactionSheetState extends State<_CreateTransactionSheet> {
       },
       builder: (context, state) => switch (state) {
         CreateTransactionInitial() ||
-        CreateTransactionLoadingDeps() =>
-          const _LoadingContent(),
+        CreateTransactionLoadingDeps() => const _LoadingContent(),
         CreateTransactionReady() => _FormContent(
-            state: state,
-            notesController: _notesController,
-            amountController: _amountController,
-          ),
-        CreateTransactionError(:final message) =>
-          _ErrorContent(message: message),
+          state: state,
+          notesController: _notesController,
+          amountController: _amountController,
+        ),
+        CreateTransactionError(:final message) => _ErrorContent(
+          message: message,
+        ),
         CreateTransactionSuccess() => const SizedBox.shrink(),
       },
     );
@@ -98,9 +99,7 @@ class _LoadingContent extends StatelessWidget {
       children: [
         _SheetDragHandle(),
         _SheetHeader(),
-        const Expanded(
-          child: Center(child: CircularProgressIndicator()),
-        ),
+        const Expanded(child: Center(child: CircularProgressIndicator())),
       ],
     );
   }
@@ -124,16 +123,21 @@ class _ErrorContent extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.error_outline,
-                    size: AppIconSize.xxl, color: context.colors.error),
+                Icon(
+                  Icons.error_outline,
+                  size: AppIconSize.xxl,
+                  color: context.colors.error,
+                ),
                 const SizedBox(height: AppSpacing.md),
-                Text(TransactionStrings.loadError,
-                    style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  TransactionStrings.loadError,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 const SizedBox(height: AppSpacing.md),
                 TextButton(
-                  onPressed: () => context
-                      .read<CreateTransactionBloc>()
-                      .add(const CreateTransactionInitialized()),
+                  onPressed: () => context.read<CreateTransactionBloc>().add(
+                    const CreateTransactionInitialized(),
+                  ),
                   child: Text(TransactionStrings.retry),
                 ),
               ],
@@ -160,8 +164,8 @@ class _FormContent extends StatelessWidget {
 
   Color _typeColor(BuildContext context) =>
       state.type == TransactionStrings.incomeType
-          ? AppColors.income
-          : AppColors.expense;
+      ? AppColors.income
+      : AppColors.expense;
 
   @override
   Widget build(BuildContext context) {
@@ -170,32 +174,30 @@ class _FormContent extends StatelessWidget {
     return Column(
       children: [
         _SheetDragHandle(),
-        _SheetHeader(),
-        // Type tabs
+        // _SheetHeader(),
+        // SizedBox(height: AppSpacing.md),
         PlanifyTabSelector(
           tabs: const [
             TransactionStrings.expenseLabel,
             TransactionStrings.incomeLabel,
           ],
-          selectedIndex:
-              state.type == TransactionStrings.expenseType ? 0 : 1,
+          selectedIndex: state.type == TransactionStrings.expenseType ? 0 : 1,
           indicatorColor: typeColor,
           onTabChanged: (index) => context.read<CreateTransactionBloc>().add(
-                CreateTransactionTypeChanged(
-                  index == 0
-                      ? TransactionStrings.expenseType
-                      : TransactionStrings.incomeType,
-                ),
-              ),
+            CreateTransactionTypeChanged(
+              index == 0
+                  ? TransactionStrings.expenseType
+                  : TransactionStrings.incomeType,
+            ),
+          ),
         ),
-        // Amount input
+        SizedBox(height: AppSpacing.md),
         _AmountInput(
           state: state,
           typeColor: typeColor,
           controller: amountController,
         ),
         const Divider(height: 1),
-        // Scrollable form fields + button
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -207,8 +209,11 @@ class _FormContent extends StatelessWidget {
                   value: state.selectedAccount?.name,
                   placeholder: 'Select account',
                   icon: Icons.credit_card_outlined,
-                  onTap: () =>
-                      _showAccountPicker(context, state.accounts, state.selectedAccount),
+                  onTap: () => _showAccountPicker(
+                    context,
+                    state.accounts,
+                    state.selectedAccount,
+                  ),
                 ),
                 _FormField(
                   label: TransactionStrings.categoryLabel,
@@ -219,7 +224,10 @@ class _FormContent extends StatelessWidget {
                       ? _parseColor(state.selectedCategory!.color)
                       : null,
                   onTap: () => _showCategoryPicker(
-                      context, state.filteredCategories, state.selectedCategory),
+                    context,
+                    state.filteredCategories,
+                    state.selectedCategory,
+                  ),
                 ),
                 _FormField(
                   label: TransactionStrings.dateTimeLabel,
@@ -233,9 +241,9 @@ class _FormContent extends StatelessWidget {
                 PlanifyButton.primary(
                   label: TransactionStrings.addRecord,
                   onTap: state.canSubmit && !state.isSubmitting
-                      ? () => context
-                          .read<CreateTransactionBloc>()
-                          .add(const CreateTransactionSubmitted())
+                      ? () => context.read<CreateTransactionBloc>().add(
+                          const CreateTransactionSubmitted(),
+                        )
                       : null,
                   isLoading: state.isSubmitting,
                 ),
@@ -285,8 +293,7 @@ class _FormContent extends StatelessWidget {
     showPlanifyModal<CategoryEntity>(
       context,
       title: TransactionStrings.selectCategory,
-      child:
-          _CategoryPickerContent(categories: categories, selected: selected),
+      child: _CategoryPickerContent(categories: categories, selected: selected),
     ).then((picked) {
       if (picked != null) bloc.add(CreateTransactionCategorySelected(picked));
     });
@@ -309,13 +316,17 @@ class _FormContent extends StatelessWidget {
     );
     if (!context.mounted) return;
 
-    bloc.add(CreateTransactionDateTimeChanged(DateTime(
-      date.year,
-      date.month,
-      date.day,
-      time?.hour ?? current.hour,
-      time?.minute ?? current.minute,
-    )));
+    bloc.add(
+      CreateTransactionDateTimeChanged(
+        DateTime(
+          date.year,
+          date.month,
+          date.day,
+          time?.hour ?? current.hour,
+          time?.minute ?? current.minute,
+        ),
+      ),
+    );
   }
 }
 
@@ -335,13 +346,13 @@ class _AmountInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final prefix = state.type == TransactionStrings.incomeType ? '+\$' : '-\$';
-    final labelStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: context.colors.onSurfaceVariant,
-        );
+    final labelStyle = Theme.of(
+      context,
+    ).textTheme.bodySmall?.copyWith(color: context.colors.onSurfaceVariant);
     final amountStyle = Theme.of(context).textTheme.displaySmall?.copyWith(
-          color: typeColor,
-          fontWeight: FontWeight.bold,
-        );
+      color: typeColor,
+      fontWeight: FontWeight.bold,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
@@ -370,10 +381,14 @@ class _AmountInput extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: '0.00',
                     hintStyle: amountStyle?.copyWith(
-                      color: context.colors.onSurfaceVariant
-                          .withValues(alpha: 0.4),
+                      color: context.colors.onSurfaceVariant.withValues(
+                        alpha: 0.4,
+                      ),
                     ),
                     border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    filled: false,
+                    enabledBorder: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -434,27 +449,29 @@ class _FormField extends StatelessWidget {
                   Text(
                     label,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: context.colors.onSurfaceVariant,
-                        ),
+                      color: context.colors.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.xxs),
                   Text(
                     displayValue,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: isPlaceholder
-                              ? context.colors.onSurfaceVariant
-                              : (valueColor ?? context.colors.onSurface),
-                          fontWeight: isPlaceholder
-                              ? FontWeight.normal
-                              : FontWeight.w500,
-                        ),
+                      color: isPlaceholder
+                          ? context.colors.onSurfaceVariant
+                          : (valueColor ?? context.colors.onSurface),
+                      fontWeight: isPlaceholder
+                          ? FontWeight.normal
+                          : FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
             ),
-            Icon(icon,
-                size: AppIconSize.lg,
-                color: context.colors.onSurfaceVariant),
+            Icon(
+              icon,
+              size: AppIconSize.lg,
+              color: context.colors.onSurfaceVariant,
+            ),
           ],
         ),
       ),
@@ -486,20 +503,23 @@ class _NotesField extends StatelessWidget {
           Text(
             TransactionStrings.notesLabel,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: context.colors.onSurfaceVariant,
-                ),
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
           TextField(
             controller: controller,
-            onChanged: (value) => context
-                .read<CreateTransactionBloc>()
-                .add(CreateTransactionNotesChanged(value)),
+            onChanged: (value) => context.read<CreateTransactionBloc>().add(
+              CreateTransactionNotesChanged(value),
+            ),
             decoration: InputDecoration(
               hintText: TransactionStrings.notesHint,
               hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: context.colors.onSurfaceVariant,
-                  ),
+                color: context.colors.onSurfaceVariant,
+              ),
               border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              filled: false,
               isDense: true,
               contentPadding: const EdgeInsets.only(top: AppSpacing.xs),
             ),
@@ -515,10 +535,7 @@ class _NotesField extends StatelessWidget {
 // ─── Pickers ─────────────────────────────────────────────────────────────────
 
 class _AccountPickerContent extends StatelessWidget {
-  const _AccountPickerContent({
-    required this.accounts,
-    required this.selected,
-  });
+  const _AccountPickerContent({required this.accounts, required this.selected});
 
   final List<AccountEntity> accounts;
   final AccountEntity? selected;
@@ -603,16 +620,29 @@ class _SheetDragHandle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.sm),
-      child: Center(
-        child: Container(
-          width: AppSpacing.xxl,
-          height: AppSpacing.xxs,
-          decoration: BoxDecoration(
-            color: context.colors.outline.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(AppRadius.full),
+      padding: const EdgeInsets.only(
+        top: AppSpacing.md,
+        right: AppSpacing.md,
+        left: AppSpacing.md,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const SizedBox(width: 40),
+          Container(
+            width: 60,
+            height: 5,
+            decoration: BoxDecoration(
+              color: context.colors.outline.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
-        ),
+          IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.close, color: context.colors.onSurfaceVariant),
+          ),
+        ],
       ),
     );
   }
@@ -621,32 +651,19 @@ class _SheetDragHandle extends StatelessWidget {
 class _SheetHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: AppIconSize.xl),
-          Expanded(
-            child: Text(
-              TransactionStrings.addRecord,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Text(
+            TransactionStrings.addRecord,
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(
-              Icons.close,
-              color: context.colors.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

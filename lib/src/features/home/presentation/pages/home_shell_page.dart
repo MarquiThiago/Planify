@@ -38,8 +38,9 @@ class HomeShellPage extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => HomeNavCubit()),
         BlocProvider(
-          create: (_) => getIt<TransactionBloc>()
-            ..add(TransactionLoadEvent(year: now.year, month: now.month)),
+          create: (_) =>
+              getIt<TransactionBloc>()
+                ..add(TransactionLoadEvent(year: now.year, month: now.month)),
         ),
       ],
       child: const _HomeShellBody(),
