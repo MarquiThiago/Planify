@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
-import 'package:planify/src/core/di/injection.dart';
 import 'package:planify/src/features/accounts/presentation/account_strings.dart';
 import 'package:planify/src/features/accounts/presentation/bloc/account_bloc.dart';
-import 'package:planify/src/features/accounts/presentation/bloc/account_event.dart';
 import 'package:planify/src/features/accounts/presentation/bloc/account_state.dart';
 import 'package:planify/src/features/accounts/presentation/widgets/account_bottom_sheet.dart';
 
@@ -13,11 +11,7 @@ class HomeTabPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          getIt<AccountBloc>()..add(const AccountsLoadRequested()),
-      child: const _HomeTabBody(),
-    );
+    return const _HomeTabBody();
   }
 }
 

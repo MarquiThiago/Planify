@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
 
@@ -68,6 +69,7 @@ class CreateTransactionAmountInput extends StatelessWidget {
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
+                  inputFormatters: [_CurrencyInputFormatter()],
                   onChanged: (value) => context
                       .read<CreateTransactionBloc>()
                       .add(CreateTransactionAmountChanged(value)),
@@ -77,6 +79,33 @@ class CreateTransactionAmountInput extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CurrencyInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+
+    if (digits.isEmpty) {
+      return newValue.copyWith(
+        text: '',
+        selection: const TextSelection.collapsed(offset: 0),
+      );
+    }
+
+    final value = int.parse(digits);
+    final cents = value % 100;
+    final units = value ~/ 100;
+    final formatted = '$units.${cents.toString().padLeft(2, '0')}';
+
+    return newValue.copyWith(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }

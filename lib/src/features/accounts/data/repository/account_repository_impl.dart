@@ -19,4 +19,15 @@ class AccountRepositoryImpl implements AccountRepository {
         .map((json) => AccountModel.fromJson(json).toEntity())
         .toList();
   }
+
+  @override
+  Stream<List<AccountEntity>> watchAccounts() {
+    final userId = _client.auth.currentUser!.id;
+    return _client
+        .from('accounts')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', userId)
+        .order('created_at', ascending: false)
+        .map((rows) => rows.map((json) => AccountModel.fromJson(json).toEntity()).toList());
+  }
 }

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
 import 'package:planify/src/core/di/injection.dart';
+import 'package:planify/src/features/accounts/presentation/bloc/account_bloc.dart';
+import 'package:planify/src/features/accounts/presentation/bloc/account_event.dart';
+
 import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_event.dart';
 import 'package:planify/src/features/transactions/features/create_transaction/presentation/widgets/transaction_bottom_sheet/create_transaction_bottom_sheet.dart';
@@ -41,6 +44,10 @@ class HomeShellPage extends StatelessWidget {
           create: (_) =>
               getIt<TransactionBloc>()
                 ..add(TransactionLoadEvent(year: now.year, month: now.month)),
+        ),
+        BlocProvider(
+          create: (_) =>
+              getIt<AccountBloc>()..add(const AccountsWatchRequested()),
         ),
       ],
       child: const _HomeShellBody(),

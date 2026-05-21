@@ -20,6 +20,7 @@ class CreateTransactionRepositoryImpl implements CreateTransactionRepository {
         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
     await _client.from('transactions').insert({
+      'user_id': _client.auth.currentUser!.id,
       'type': type,
       'amount': amount,
       'account_id': accountId,
