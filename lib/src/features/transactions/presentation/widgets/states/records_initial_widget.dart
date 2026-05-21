@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
 
-import '../transaction_strings.dart';
+import '../../transaction_strings.dart';
 
 class RecordsInitialWidget extends StatelessWidget {
   const RecordsInitialWidget({super.key});

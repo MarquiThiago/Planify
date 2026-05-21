@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../transaction_dimens.dart';
+import '../../transaction_dimens.dart';
 
 class RecordsLoadingWidget extends StatelessWidget {
   const RecordsLoadingWidget({super.key});

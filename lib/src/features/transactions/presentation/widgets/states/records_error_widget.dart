@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
 
-import '../bloc/transaction_bloc.dart';
-import '../bloc/transaction_event.dart';
-import '../transaction_strings.dart';
+import '../../bloc/transaction_bloc.dart';
+import '../../bloc/transaction_event.dart';
+import '../../transaction_strings.dart';
 
 class RecordsErrorWidget extends StatelessWidget {
   const RecordsErrorWidget({

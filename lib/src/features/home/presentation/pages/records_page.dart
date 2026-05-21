@@ -5,11 +5,11 @@ import 'package:planify/src/features/transactions/presentation/bloc/transaction_
 import 'package:planify/src/features/transactions/presentation/bloc/transaction_event.dart';
 import 'package:planify/src/features/transactions/presentation/bloc/transaction_state.dart';
 import 'package:planify/src/features/transactions/presentation/transaction_strings.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/create_transaction_bottom_sheet.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/records_error_widget.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/records_initial_widget.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/records_loading_widget.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/records_success_widget.dart';
+import 'package:planify/src/features/transactions/presentation/widgets/transaction_bottom_sheet/create_transaction_bottom_sheet.dart';
+import 'package:planify/src/features/transactions/presentation/widgets/states/records_error_widget.dart';
+import 'package:planify/src/features/transactions/presentation/widgets/states/records_initial_widget.dart';
+import 'package:planify/src/features/transactions/presentation/widgets/states/records_loading_widget.dart';
+import 'package:planify/src/features/transactions/presentation/widgets/states/records_success_widget.dart';
 
 class RecordsPage extends StatelessWidget {
   const RecordsPage({super.key});

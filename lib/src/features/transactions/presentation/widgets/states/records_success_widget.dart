@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
 
-import '../../domain/entities/transaction_entity.dart';
-import '../transaction_strings.dart';
+import '../../../domain/entities/transaction_entity.dart';
+import '../../transaction_strings.dart';
 
 class RecordsSuccessWidget extends StatelessWidget {
   const RecordsSuccessWidget({
