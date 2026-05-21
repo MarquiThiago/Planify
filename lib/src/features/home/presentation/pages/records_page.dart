@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
-import 'package:planify/src/features/transactions/presentation/bloc/transaction_bloc.dart';
-import 'package:planify/src/features/transactions/presentation/bloc/transaction_event.dart';
-import 'package:planify/src/features/transactions/presentation/bloc/transaction_state.dart';
-import 'package:planify/src/features/transactions/presentation/transaction_strings.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/transaction_bottom_sheet/create_transaction_bottom_sheet.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/states/records_error_widget.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/states/records_initial_widget.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/states/records_loading_widget.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/states/records_success_widget.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_bloc.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_event.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_state.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/get_transaction_strings.dart';
+import 'package:planify/src/features/transactions/features/create_transaction/presentation/widgets/transaction_bottom_sheet/create_transaction_bottom_sheet.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/widgets/states/records_error_widget.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/widgets/states/records_initial_widget.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/widgets/states/records_loading_widget.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/widgets/states/records_success_widget.dart';
 
 class RecordsPage extends StatelessWidget {
   const RecordsPage({super.key});
@@ -51,7 +51,7 @@ class _RecordsHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            TransactionStrings.pageTitle,
+            GetTransactionStrings.pageTitle,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -95,7 +95,7 @@ class _PeriodSelector extends StatelessWidget {
       context: context,
       builder: (_) => SimpleDialog(
         title: Text(
-          TransactionStrings.selectYear,
+          GetTransactionStrings.selectYear,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         children: years
@@ -164,7 +164,7 @@ class _PeriodSelector extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${TransactionStrings.months[month - 1]} ',
+                      '${GetTransactionStrings.months[month - 1]} ',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
 import 'package:planify/src/core/di/injection.dart';
-import 'package:planify/src/features/transactions/presentation/bloc/transaction_bloc.dart';
-import 'package:planify/src/features/transactions/presentation/bloc/transaction_event.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/transaction_bottom_sheet/create_transaction_bottom_sheet.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_bloc.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_event.dart';
+import 'package:planify/src/features/transactions/features/create_transaction/presentation/widgets/transaction_bottom_sheet/create_transaction_bottom_sheet.dart';
 
 import '../cubit/home_nav_cubit.dart';
 import '../home_strings.dart';
