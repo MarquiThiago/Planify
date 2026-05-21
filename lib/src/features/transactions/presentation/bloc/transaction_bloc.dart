@@ -10,6 +10,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     on<TransactionPreviousMonthEvent>(_onPreviousMonth);
     on<TransactionNextMonthEvent>(_onNextMonth);
     on<TransactionChangeYearEvent>(_onChangeYear);
+    on<TransactionRefreshEvent>(_onRefresh);
   }
 
   final TransactionRepository _repository;
@@ -71,5 +72,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     add(TransactionLoadEvent(year: event.year, month: _currentPeriod.month));
+  }
+
+  Future<void> _onRefresh(
+    TransactionRefreshEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    final period = _currentPeriod;
+    add(TransactionLoadEvent(year: period.year, month: period.month));
   }
 }

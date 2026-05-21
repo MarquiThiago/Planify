@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
-import 'package:planify/src/core/di/injection.dart';
 import 'package:planify/src/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:planify/src/features/transactions/presentation/bloc/transaction_event.dart';
 import 'package:planify/src/features/transactions/presentation/bloc/transaction_state.dart';
 import 'package:planify/src/features/transactions/presentation/transaction_strings.dart';
+import 'package:planify/src/features/transactions/presentation/widgets/create_transaction_bottom_sheet.dart';
 import 'package:planify/src/features/transactions/presentation/widgets/records_error_widget.dart';
 import 'package:planify/src/features/transactions/presentation/widgets/records_initial_widget.dart';
 import 'package:planify/src/features/transactions/presentation/widgets/records_loading_widget.dart';
@@ -16,12 +16,7 @@ class RecordsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    return BlocProvider(
-      create: (_) => getIt<TransactionBloc>()
-        ..add(TransactionLoadEvent(year: now.year, month: now.month)),
-      child: const _RecordsBody(),
-    );
+    return const _RecordsBody();
   }
 }
 
@@ -36,9 +31,7 @@ class _RecordsBody extends StatelessWidget {
           children: [
             _RecordsHeader(),
             _PeriodSelector(),
-            const Expanded(
-              child: _RecordsContent(),
-            ),
+            const Expanded(child: _RecordsContent()),
           ],
         ),
       ),
@@ -63,17 +56,27 @@ class _RecordsHeader extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          Container(
-            width: AppIconSize.xxl,
-            height: AppIconSize.xxl,
-            decoration: BoxDecoration(
-              color: context.colors.primary,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.add,
-              color: context.colors.onPrimary,
-              size: AppIconSize.lg,
+          GestureDetector(
+            onTap: () {
+              final transactionBloc = context.read<TransactionBloc>();
+              showCreateTransactionBottomSheet(context).then((created) {
+                if (created == true) {
+                  transactionBloc.add(const TransactionRefreshEvent());
+                }
+              });
+            },
+            child: Container(
+              width: AppIconSize.xxl,
+              height: AppIconSize.xxl,
+              decoration: BoxDecoration(
+                color: context.colors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.add,
+                color: context.colors.onPrimary,
+                size: AppIconSize.lg,
+              ),
             ),
           ),
         ],

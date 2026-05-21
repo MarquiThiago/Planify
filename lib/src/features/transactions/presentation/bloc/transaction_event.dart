@@ -33,3 +33,7 @@ final class TransactionChangeYearEvent extends TransactionEvent {
   @override
   List<Object?> get props => [year];
 }
+
+final class TransactionRefreshEvent extends TransactionEvent {
+  const TransactionRefreshEvent();
+}

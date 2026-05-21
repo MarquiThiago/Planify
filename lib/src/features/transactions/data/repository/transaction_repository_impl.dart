@@ -28,4 +28,26 @@ class TransactionRepositoryImpl implements TransactionRepository {
         .map((json) => TransactionModel.fromJson(json).toEntity())
         .toList();
   }
+
+  @override
+  Future<void> createTransaction({
+    required String type,
+    required double amount,
+    required String accountId,
+    required String categoryId,
+    required DateTime date,
+    String? description,
+  }) async {
+    final dateStr =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+    await _client.from('transactions').insert({
+      'type': type,
+      'amount': amount,
+      'account_id': accountId,
+      'category_id': categoryId,
+      'date': dateStr,
+      'description': description,
+    });
+  }
 }

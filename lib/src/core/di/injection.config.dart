@@ -24,10 +24,14 @@ import 'package:planify/src/features/auth/domain/repository/auth_repository.dart
 import 'package:planify/src/features/auth/modulo/auth_module.dart' as _i288;
 import 'package:planify/src/features/auth/presentation/bloc/auth_bloc.dart'
     as _i399;
+import 'package:planify/src/features/transactions/domain/repository/category_repository.dart'
+    as _i238;
 import 'package:planify/src/features/transactions/domain/repository/transaction_repository.dart'
     as _i539;
 import 'package:planify/src/features/transactions/modulo/transaction_module.dart'
     as _i129;
+import 'package:planify/src/features/transactions/presentation/bloc/create_transaction/create_transaction_bloc.dart'
+    as _i742;
 import 'package:planify/src/features/transactions/presentation/bloc/transaction_bloc.dart'
     as _i1026;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i454;
@@ -46,6 +50,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i494.AccountBloc>(() => accountModule.accountBloc);
     gh.factory<_i399.AuthBloc>(() => authModule.authBloc);
     gh.factory<_i1026.TransactionBloc>(() => transactionModule.transactionBloc);
+    gh.factory<_i742.CreateTransactionBloc>(
+      () => transactionModule.createTransactionBloc,
+    );
     gh.lazySingleton<_i454.SupabaseClient>(() => coreModule.supabaseClient);
     gh.lazySingleton<_i712.AuthCubit>(() => coreModule.authCubit);
     gh.lazySingleton<_i839.AccountRepository>(
@@ -54,6 +61,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i129.AuthRepository>(() => authModule.authRepository);
     gh.lazySingleton<_i539.TransactionRepository>(
       () => transactionModule.transactionRepository,
+    );
+    gh.lazySingleton<_i238.CategoryRepository>(
+      () => transactionModule.categoryRepository,
     );
     return this;
   }
