@@ -10,3 +10,7 @@ sealed class AccountEvent extends Equatable {
 final class AccountsLoadRequested extends AccountEvent {
   const AccountsLoadRequested();
 }
+
+final class AccountsWatchRequested extends AccountEvent {
+  const AccountsWatchRequested();
+}

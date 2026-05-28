@@ -7,6 +7,7 @@ import 'account_state.dart';
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
   AccountBloc(this._repository) : super(const AccountInitial()) {
     on<AccountsLoadRequested>(_onAccountsLoadRequested);
+    on<AccountsWatchRequested>(_onAccountsWatchRequested);
   }
 
   final AccountRepository _repository;
@@ -22,5 +23,17 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     } catch (e) {
       emit(AccountError(e.toString()));
     }
+  }
+
+  Future<void> _onAccountsWatchRequested(
+    AccountsWatchRequested event,
+    Emitter<AccountState> emit,
+  ) async {
+    emit(const AccountLoading());
+    await emit.forEach(
+      _repository.watchAccounts(),
+      onData: AccountSuccess.new,
+      onError: (error, _) => AccountError(error.toString()),
+    );
   }
 }

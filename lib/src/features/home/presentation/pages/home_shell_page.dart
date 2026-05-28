@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
+import 'package:planify/src/core/di/injection.dart';
+import 'package:planify/src/features/accounts/presentation/bloc/account_bloc.dart';
+import 'package:planify/src/features/accounts/presentation/bloc/account_event.dart';
+
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_bloc.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_event.dart';
+import 'package:planify/src/features/transactions/features/create_transaction/presentation/widgets/transaction_bottom_sheet/create_transaction_bottom_sheet.dart';
+
 import '../cubit/home_nav_cubit.dart';
 import '../home_strings.dart';
 import 'cards_page.dart';
@@ -28,8 +36,20 @@ class HomeShellPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => HomeNavCubit(),
+    final now = DateTime.now();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => HomeNavCubit()),
+        BlocProvider(
+          create: (_) =>
+              getIt<TransactionBloc>()
+                ..add(TransactionLoadEvent(year: now.year, month: now.month)),
+        ),
+        BlocProvider(
+          create: (_) =>
+              getIt<AccountBloc>()..add(const AccountsWatchRequested()),
+        ),
+      ],
       child: const _HomeShellBody(),
     );
   }
@@ -52,7 +72,12 @@ class _HomeShellBody extends StatelessWidget {
             currentIndex: currentIndex,
             onTabSelected: context.read<HomeNavCubit>().selectTab,
             onAddTapped: () {
-              // TODO: implementar ação de adicionar
+              final transactionBloc = context.read<TransactionBloc>();
+              showCreateTransactionBottomSheet(context).then((created) {
+                if (created == true) {
+                  transactionBloc.add(const TransactionRefreshEvent());
+                }
+              });
             },
           ),
         );

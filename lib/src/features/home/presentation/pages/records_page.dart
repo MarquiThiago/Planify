@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:planify/src/core/design_system/design_system.dart';
-import 'package:planify/src/core/di/injection.dart';
-import 'package:planify/src/features/transactions/presentation/bloc/transaction_bloc.dart';
-import 'package:planify/src/features/transactions/presentation/bloc/transaction_event.dart';
-import 'package:planify/src/features/transactions/presentation/bloc/transaction_state.dart';
-import 'package:planify/src/features/transactions/presentation/transaction_strings.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/records_error_widget.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/records_initial_widget.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/records_loading_widget.dart';
-import 'package:planify/src/features/transactions/presentation/widgets/records_success_widget.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_bloc.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_event.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_state.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/get_transaction_strings.dart';
+import 'package:planify/src/features/transactions/features/create_transaction/presentation/widgets/transaction_bottom_sheet/create_transaction_bottom_sheet.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/widgets/states/records_error_widget.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/widgets/states/records_initial_widget.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/widgets/states/records_loading_widget.dart';
+import 'package:planify/src/features/transactions/features/get_transactions/presentation/widgets/states/records_success_widget.dart';
 
 class RecordsPage extends StatelessWidget {
   const RecordsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    return BlocProvider(
-      create: (_) => getIt<TransactionBloc>()
-        ..add(TransactionLoadEvent(year: now.year, month: now.month)),
-      child: const _RecordsBody(),
-    );
+    return const _RecordsBody();
   }
 }
 
@@ -36,9 +31,7 @@ class _RecordsBody extends StatelessWidget {
           children: [
             _RecordsHeader(),
             _PeriodSelector(),
-            const Expanded(
-              child: _RecordsContent(),
-            ),
+            const Expanded(child: _RecordsContent()),
           ],
         ),
       ),
@@ -58,22 +51,32 @@ class _RecordsHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            TransactionStrings.pageTitle,
+            GetTransactionStrings.pageTitle,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          Container(
-            width: AppIconSize.xxl,
-            height: AppIconSize.xxl,
-            decoration: BoxDecoration(
-              color: context.colors.primary,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.add,
-              color: context.colors.onPrimary,
-              size: AppIconSize.lg,
+          GestureDetector(
+            onTap: () {
+              final transactionBloc = context.read<TransactionBloc>();
+              showCreateTransactionBottomSheet(context).then((created) {
+                if (created == true) {
+                  transactionBloc.add(const TransactionRefreshEvent());
+                }
+              });
+            },
+            child: Container(
+              width: AppIconSize.xxl,
+              height: AppIconSize.xxl,
+              decoration: BoxDecoration(
+                color: context.colors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.add,
+                color: context.colors.onPrimary,
+                size: AppIconSize.lg,
+              ),
             ),
           ),
         ],
@@ -92,7 +95,7 @@ class _PeriodSelector extends StatelessWidget {
       context: context,
       builder: (_) => SimpleDialog(
         title: Text(
-          TransactionStrings.selectYear,
+          GetTransactionStrings.selectYear,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         children: years
@@ -161,7 +164,7 @@ class _PeriodSelector extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${TransactionStrings.months[month - 1]} ',
+                      '${GetTransactionStrings.months[month - 1]} ',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
