@@ -46,9 +46,8 @@ class PlanifyCard extends StatelessWidget {
     return AnimatedContainer(
       duration: AppDurations.fast,
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerLowest,
+        color: scheme.surfaceContainerLow,
         borderRadius: AppRadius.cardBR,
-        border: Border.all(color: scheme.outlineVariant),
       ),
       clipBehavior: Clip.antiAlias,
       child: onTap != null

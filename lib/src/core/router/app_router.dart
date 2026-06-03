@@ -13,6 +13,7 @@ import 'routes.dart';
 // ─── Feature routes ───────────────────────────────────────────────────────────
 import '../../features/auth/routes/auth_routes.dart';
 import '../../features/home/routes/home_routes.dart';
+import '../../features/spending_statistics/routes/spending_statistics_routes.dart';
 // ---------------------------------------------------------------------------
 
 /// Instância global do GoRouter.
@@ -46,6 +47,9 @@ final GoRouter appRouter = GoRouter(
         ),
       ],
     ),
+
+    // ── Statistics ────────────────────────────────────────────────────────
+    ...spendingStatisticsRoutes,
   ],
 );
 

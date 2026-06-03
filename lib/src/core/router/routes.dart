@@ -9,7 +9,10 @@ enum Routes {
 
   // Transactions
   transactionList('/transactions'),
-  transactionDetail('/transactions/:id');
+  transactionDetail('/transactions/:id'),
+
+  // Statistics
+  spendingStatistics('/statistics');
 
   const Routes(this.path);
 

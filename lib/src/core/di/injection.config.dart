@@ -24,6 +24,12 @@ import 'package:planify/src/features/auth/domain/repository/auth_repository.dart
 import 'package:planify/src/features/auth/modulo/auth_module.dart' as _i288;
 import 'package:planify/src/features/auth/presentation/bloc/auth_bloc.dart'
     as _i399;
+import 'package:planify/src/features/spending_statistics/domain/repository/spending_statistics_repository.dart'
+    as _i374;
+import 'package:planify/src/features/spending_statistics/modulo/spending_statistics_module.dart'
+    as _i1004;
+import 'package:planify/src/features/spending_statistics/presentation/bloc/spending_statistics_bloc.dart'
+    as _i70;
 import 'package:planify/src/features/transactions/features/create_transaction/domain/repository/category_repository.dart'
     as _i598;
 import 'package:planify/src/features/transactions/features/create_transaction/domain/repository/create_transaction_repository.dart'
@@ -49,11 +55,15 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final accountModule = _$AccountModule();
     final authModule = _$AuthModule();
+    final spendingStatisticsModule = _$SpendingStatisticsModule();
     final createTransactionModule = _$CreateTransactionModule();
     final getTransactionModule = _$GetTransactionModule();
     final coreModule = _$CoreModule();
     gh.factory<_i494.AccountBloc>(() => accountModule.accountBloc);
     gh.factory<_i399.AuthBloc>(() => authModule.authBloc);
+    gh.factory<_i70.SpendingStatisticsBloc>(
+      () => spendingStatisticsModule.spendingStatisticsBloc,
+    );
     gh.factory<_i465.CreateTransactionBloc>(
       () => createTransactionModule.createTransactionBloc,
     );
@@ -66,6 +76,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => accountModule.accountRepository,
     );
     gh.lazySingleton<_i129.AuthRepository>(() => authModule.authRepository);
+    gh.lazySingleton<_i374.SpendingStatisticsRepository>(
+      () => spendingStatisticsModule.spendingStatisticsRepository,
+    );
     gh.lazySingleton<_i166.CreateTransactionRepository>(
       () => createTransactionModule.createTransactionRepository,
     );
@@ -82,6 +95,8 @@ extension GetItInjectableX on _i174.GetIt {
 class _$AccountModule extends _i913.AccountModule {}
 
 class _$AuthModule extends _i288.AuthModule {}
+
+class _$SpendingStatisticsModule extends _i1004.SpendingStatisticsModule {}
 
 class _$CreateTransactionModule extends _i559.CreateTransactionModule {}
 
