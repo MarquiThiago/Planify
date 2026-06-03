@@ -64,6 +64,9 @@ dependencies:
   # Charts
   fl_chart: ^0.70.2
 
+  # Persistence
+  shared_preferences: ^2.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

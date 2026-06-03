@@ -30,6 +30,8 @@ import 'package:planify/src/features/spending_statistics/modulo/spending_statist
     as _i1004;
 import 'package:planify/src/features/spending_statistics/presentation/bloc/spending_statistics_bloc.dart'
     as _i70;
+import 'package:planify/src/features/theme/cubit/theme_cubit.dart' as _i367;
+import 'package:planify/src/features/theme/modulo/theme_module.dart' as _i23;
 import 'package:planify/src/features/transactions/features/create_transaction/domain/repository/category_repository.dart'
     as _i598;
 import 'package:planify/src/features/transactions/features/create_transaction/domain/repository/create_transaction_repository.dart'
@@ -44,14 +46,15 @@ import 'package:planify/src/features/transactions/features/get_transactions/modu
     as _i363;
 import 'package:planify/src/features/transactions/features/get_transactions/presentation/bloc/transaction_bloc.dart'
     as _i1060;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i454;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
-  _i174.GetIt init({
+  Future<_i174.GetIt> init({
     String? environment,
     _i526.EnvironmentFilter? environmentFilter,
-  }) {
+  }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final accountModule = _$AccountModule();
     final authModule = _$AuthModule();
@@ -59,6 +62,7 @@ extension GetItInjectableX on _i174.GetIt {
     final createTransactionModule = _$CreateTransactionModule();
     final getTransactionModule = _$GetTransactionModule();
     final coreModule = _$CoreModule();
+    final themeModule = _$ThemeModule();
     gh.factory<_i494.AccountBloc>(() => accountModule.accountBloc);
     gh.factory<_i399.AuthBloc>(() => authModule.authBloc);
     gh.factory<_i70.SpendingStatisticsBloc>(
@@ -79,6 +83,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i374.SpendingStatisticsRepository>(
       () => spendingStatisticsModule.spendingStatisticsRepository,
     );
+    await gh.lazySingletonAsync<_i460.SharedPreferences>(
+      () => themeModule.sharedPreferences,
+      preResolve: true,
+    );
     gh.lazySingleton<_i166.CreateTransactionRepository>(
       () => createTransactionModule.createTransactionRepository,
     );
@@ -87,6 +95,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i550.GetTransactionRepository>(
       () => getTransactionModule.getTransactionRepository,
+    );
+    gh.lazySingleton<_i367.ThemeCubit>(
+      () => _i367.ThemeCubit(gh<_i460.SharedPreferences>()),
     );
     return this;
   }
@@ -103,3 +114,5 @@ class _$CreateTransactionModule extends _i559.CreateTransactionModule {}
 class _$GetTransactionModule extends _i363.GetTransactionModule {}
 
 class _$CoreModule extends _i258.CoreModule {}
+
+class _$ThemeModule extends _i23.ThemeModule {}
