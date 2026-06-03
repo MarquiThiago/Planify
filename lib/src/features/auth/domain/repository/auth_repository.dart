@@ -7,4 +7,9 @@ abstract class AuthRepository {
   Future<void> signInWithApple();
   Future<void> signOut();
   UserEntity? getCurrentUser();
+
+  // Password recovery
+  Future<void> sendPasswordRecoveryOtp(String email);
+  Future<void> verifyPasswordRecoveryOtp(String email, String otp);
+  Future<void> updatePasswordAndSignOut(String newPassword);
 }

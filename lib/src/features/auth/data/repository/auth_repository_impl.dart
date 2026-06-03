@@ -62,4 +62,27 @@ class AuthRepositoryImpl implements AuthRepository {
     if (user == null) return null;
     return UserModel.fromSupabaseUser(user).toEntity();
   }
+
+  @override
+  Future<void> sendPasswordRecoveryOtp(String email) async {
+    await _client.auth.signInWithOtp(
+      email: email,
+      shouldCreateUser: false,
+    );
+  }
+
+  @override
+  Future<void> verifyPasswordRecoveryOtp(String email, String otp) async {
+    await _client.auth.verifyOTP(
+      email: email,
+      token: otp,
+      type: OtpType.email,
+    );
+  }
+
+  @override
+  Future<void> updatePasswordAndSignOut(String newPassword) async {
+    await _client.auth.updateUser(UserAttributes(password: newPassword));
+    await _client.auth.signOut();
+  }
 }
