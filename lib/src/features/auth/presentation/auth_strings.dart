@@ -19,4 +19,28 @@ class AuthStrings {
   static const String confirmPasswordLabel = 'Confirmar senha';
   static const String confirmPasswordHint = '••••••••';
   static const String passwordMismatchError = 'As senhas não coincidem';
+
+  // Forgot password
+  static const String forgotPasswordLink = 'Esqueci minha senha';
+  static const String forgotPasswordTitle = 'Recuperar senha';
+  static const String forgotPasswordSubtitle =
+      'Informe seu e-mail e enviaremos um código de verificação';
+  static const String sendCodeButton = 'Enviar código';
+
+  // OTP verification
+  static const String otpTitle = 'Verifique seu e-mail';
+  static const String otpSubtitlePrefix = 'Código enviado para ';
+  static const String otpVerifyButton = 'Verificar';
+  static const String otpResendButton = 'Reenviar código';
+
+  // New password
+  static const String newPasswordTitle = 'Nova senha';
+  static const String newPasswordSubtitle =
+      'Crie uma nova senha para sua conta';
+  static const String newPasswordLabel = 'Nova senha';
+  static const String newPasswordHint = '••••••••';
+  static const String confirmNewPasswordLabel = 'Confirmar nova senha';
+  static const String savePasswordButton = 'Salvar senha';
+  static const String passwordSavedMessage =
+      'Senha atualizada com sucesso!';
 }

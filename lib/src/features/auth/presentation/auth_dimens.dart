@@ -11,4 +11,10 @@ class AuthDimens {
   static const double fieldRadius = 12.0;
   static const double dividerSpacing = 12.0;
   static const int skeletonItemCount = 4;
+
+  // OTP boxes
+  static const double otpBoxWidth = 44.0;
+  static const double otpBoxHeight = 56.0;
+  static const double otpBoxSpacing = 8.0;
+  static const double otpBoxRadius = 12.0;
 }
