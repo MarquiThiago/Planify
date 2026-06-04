@@ -17,16 +17,12 @@ class BudgetOverviewBloc extends Bloc<BudgetOverviewEvent, BudgetOverviewState> 
     Emitter<BudgetOverviewState> emit,
   ) async {
     emit(const BudgetOverviewLoading());
-    try {
-      final group = await _repository.getBudgetGroup(event.period);
-      if (group == null) {
-        emit(const BudgetOverviewEmpty());
-      } else {
-        emit(BudgetOverviewSuccess(group));
-      }
-    } catch (_) {
-      emit(const BudgetOverviewError('Erro ao carregar orçamento.'));
-    }
+    await emit.forEach(
+      _repository.watchBudgetGroup(event.period),
+      onData: (group) =>
+          group == null ? const BudgetOverviewEmpty() : BudgetOverviewSuccess(group),
+      onError: (err, st) => const BudgetOverviewError('Erro ao carregar orçamento.'),
+    );
   }
 
   Future<void> _onDeleteRequested(

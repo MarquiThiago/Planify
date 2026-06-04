@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entities/budget_group_entity.dart';
@@ -65,6 +67,46 @@ class BudgetRepositoryImpl implements BudgetRepository {
     final budgets = rows.map((row) => BudgetModel.fromJson(row).toEntity()).toList();
 
     return group.toEntity(budgets);
+  }
+
+  @override
+  Stream<BudgetGroupEntity?> watchBudgetGroup(DateTime period) {
+    final controller = StreamController<BudgetGroupEntity?>();
+
+    Future<void> fetch() async {
+      try {
+        final result = await getBudgetGroup(period);
+        if (!controller.isClosed) controller.add(result);
+      } catch (e) {
+        if (!controller.isClosed) controller.addError(e);
+      }
+    }
+
+    final channel = _client.channel('budget_watch_${_formatPeriod(period)}');
+
+    channel
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'budget_groups',
+          callback: (_) => fetch(),
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'transactions',
+          callback: (_) => fetch(),
+        )
+        .subscribe();
+
+    fetch();
+
+    controller.onCancel = () {
+      _client.removeChannel(channel);
+      controller.close();
+    };
+
+    return controller.stream;
   }
 
   @override

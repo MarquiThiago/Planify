@@ -10,5 +10,7 @@ abstract class BudgetRepository {
 
   Future<BudgetGroupEntity?> getBudgetGroup(DateTime period);
 
+  Stream<BudgetGroupEntity?> watchBudgetGroup(DateTime period);
+
   Future<void> deleteBudgetGroup(String groupId);
 }
