@@ -24,6 +24,8 @@ import 'package:planify/src/features/auth/domain/repository/auth_repository.dart
 import 'package:planify/src/features/auth/modulo/auth_module.dart' as _i288;
 import 'package:planify/src/features/auth/presentation/bloc/auth_bloc.dart'
     as _i399;
+import 'package:planify/src/features/auth/presentation/bloc/password_recovery/password_recovery_bloc.dart'
+    as _i628;
 import 'package:planify/src/features/spending_statistics/domain/repository/spending_statistics_repository.dart'
     as _i374;
 import 'package:planify/src/features/spending_statistics/modulo/spending_statistics_module.dart'
@@ -65,6 +67,9 @@ extension GetItInjectableX on _i174.GetIt {
     final themeModule = _$ThemeModule();
     gh.factory<_i494.AccountBloc>(() => accountModule.accountBloc);
     gh.factory<_i399.AuthBloc>(() => authModule.authBloc);
+    gh.factory<_i628.PasswordRecoveryBloc>(
+      () => authModule.passwordRecoveryBloc,
+    );
     gh.factory<_i70.SpendingStatisticsBloc>(
       () => spendingStatisticsModule.spendingStatisticsBloc,
     );

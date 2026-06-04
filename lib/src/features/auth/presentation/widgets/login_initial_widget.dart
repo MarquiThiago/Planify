@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:planify/src/core/router/routes.dart';
 
 import '../auth_dimens.dart';
 import '../auth_strings.dart';
@@ -86,7 +88,15 @@ class _LoginInitialWidgetState extends State<LoginInitialWidget> {
                 return null;
               },
             ),
-            const SizedBox(height: AuthDimens.spacingLarge),
+            const SizedBox(height: AuthDimens.spacingSmall),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => context.push(Routes.forgotPassword.path),
+                child: const Text(AuthStrings.forgotPasswordLink),
+              ),
+            ),
+            const SizedBox(height: AuthDimens.spacing),
             SizedBox(
               height: AuthDimens.buttonHeight,
               child: FilledButton(

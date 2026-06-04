@@ -12,7 +12,10 @@ enum Routes {
   transactionDetail('/transactions/:id'),
 
   // Statistics
-  spendingStatistics('/statistics');
+  spendingStatistics('/statistics'),
+
+  // Password recovery
+  forgotPassword('/forgot-password');
 
   const Routes(this.path);
 

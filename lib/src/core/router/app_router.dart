@@ -56,7 +56,7 @@ final GoRouter appRouter = GoRouter(
 // ─── Redirect / Guards ────────────────────────────────────────────────────────
 
 /// Rotas que não exigem autenticação.
-const _publicRoutes = {Routes.splash, Routes.login};
+const _publicRoutes = {Routes.splash, Routes.login, Routes.forgotPassword};
 
 String? _redirect(BuildContext context, GoRouterState state) {
   final location = state.matchedLocation;
