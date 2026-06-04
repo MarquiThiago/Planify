@@ -14,6 +14,10 @@ enum Routes {
   // Statistics
   spendingStatistics('/statistics'),
 
+  // Budgets
+  budgetOverview('/budget'),
+  budgetCreation('/budget/new'),
+
   // Password recovery
   forgotPassword('/forgot-password');
 
