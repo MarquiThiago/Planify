@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:planify/src/core/design_system/design_system.dart';
 
 import '../../domain/entities/category_spending_entity.dart';
 import '../../strings/spending_statistics_dimens.dart';
@@ -25,68 +26,21 @@ class SpendingCategoryChipsWidget extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: items
-            .map((cat) => Padding(
-                  padding: const EdgeInsets.only(
-                    right: SpendingStatisticsDimens.chipSpacing,
+            .map(
+              (cat) => Padding(
+                padding: const EdgeInsets.only(
+                  right: SpendingStatisticsDimens.chipSpacing,
+                ),
+                child: PlanifyCategoryChip(
+                  color: _hexToColor(cat.categoryColor),
+                  name: cat.categoryName,
+                  sublabel: SpendingStatisticsStrings.formatCurrency(
+                    cat.totalAmount,
                   ),
-                  child: _CategoryChip(category: cat),
-                ))
-            .toList(),
-      ),
-    );
-  }
-}
-
-class _CategoryChip extends StatelessWidget {
-  const _CategoryChip({required this.category});
-
-  final CategorySpendingEntity category;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = _hexToColor(category.categoryColor);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: SpendingStatisticsDimens.chipHorizontalPadding,
-        vertical: SpendingStatisticsDimens.chipVerticalPadding,
-      ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLow,
-        borderRadius:
-            BorderRadius.circular(SpendingStatisticsDimens.chipBorderRadius),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: SpendingStatisticsDimens.chipDotSize,
-            height: SpendingStatisticsDimens.chipDotSize,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: SpendingStatisticsDimens.xsmallSpacing),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                category.categoryName,
-                style: theme.textTheme.labelSmall,
-              ),
-              Text(
-                SpendingStatisticsStrings.formatCurrency(category.totalAmount),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
-          ),
-        ],
+            )
+            .toList(),
       ),
     );
   }

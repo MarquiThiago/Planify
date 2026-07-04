@@ -8,6 +8,7 @@ export 'tokens/app_spacing.dart';
 
 // Icons
 export 'icons/app_svg_icons.dart';
+export 'icons/app_icon_map.dart';
 
 // Theme
 export 'theme/app_theme.dart';
@@ -32,6 +33,9 @@ export 'widgets/tabs/planify_tab_selector.dart';
 export 'widgets/list/planify_selectable_item.dart';
 export 'widgets/color_picker/planify_color_picker.dart';
 export 'widgets/icon_picker/planify_icon_picker.dart';
+
+// Widgets - Chips
+export 'widgets/chips/planify_category_chip.dart';
 
 // Widgets - Modais
 export 'widgets/modal/planify_modal.dart';

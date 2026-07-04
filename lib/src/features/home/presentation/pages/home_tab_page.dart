@@ -5,6 +5,7 @@ import 'package:planify/src/features/accounts/presentation/account_strings.dart'
 import 'package:planify/src/features/accounts/presentation/bloc/account_bloc.dart';
 import 'package:planify/src/features/accounts/presentation/bloc/account_state.dart';
 import 'package:planify/src/features/accounts/presentation/widgets/account_bottom_sheet.dart';
+import 'package:planify/src/features/budgets/presentation/widgets/home/budget_home_widget.dart';
 import 'package:planify/src/features/spending_statistics/presentation/widgets/spending_home_widget.dart';
 
 class HomeTabPage extends StatelessWidget {
@@ -48,6 +49,8 @@ class _HomeTabBody extends StatelessWidget {
                 };
               },
             ),
+            const SizedBox(height: AppSpacing.md),
+            const BudgetHomeWidget(),
             const SizedBox(height: AppSpacing.md),
             const SpendingHomeWidget(),
           ],
