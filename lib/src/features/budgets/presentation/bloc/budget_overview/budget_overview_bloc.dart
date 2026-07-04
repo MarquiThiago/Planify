@@ -29,10 +29,10 @@ class BudgetOverviewBloc extends Bloc<BudgetOverviewEvent, BudgetOverviewState> 
     BudgetOverviewDeleteRequested event,
     Emitter<BudgetOverviewState> emit,
   ) async {
-    emit(const BudgetOverviewLoading());
     try {
       await _repository.deleteBudgetGroup(event.groupId);
-      emit(const BudgetOverviewEmpty());
+      // O stream detecta o DELETE na tabela budget_groups via Realtime
+      // e emite BudgetOverviewEmpty automaticamente
     } catch (_) {
       emit(const BudgetOverviewError('Erro ao excluir orçamento.'));
     }

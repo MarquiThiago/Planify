@@ -26,6 +26,12 @@ class BudgetStrings {
   static const String step2Subtitle = 'Escolha em quais categorias deseja controlar seus gastos.';
   static const String step2NextButton = 'Próximo';
 
+  // Home Widget
+  static const String homeViewAll = 'Ver todos';
+  static const String homeLeft = 'restante';
+  static const String homeSpentThisMonth = 'gasto este mês';
+  static const String homeSpent = 'gasto';
+
   // Creation — Step 3
   static const String step3Title = 'Defina os limites';
   static const String step3Subtitle = 'Distribua o valor disponível entre as categorias.';

@@ -72,6 +72,7 @@ class BudgetRepositoryImpl implements BudgetRepository {
   @override
   Stream<BudgetGroupEntity?> watchBudgetGroup(DateTime period) {
     final controller = StreamController<BudgetGroupEntity?>();
+    final userId = _client.auth.currentUser!.id;
 
     Future<void> fetch() async {
       try {
@@ -82,19 +83,30 @@ class BudgetRepositoryImpl implements BudgetRepository {
       }
     }
 
-    final channel = _client.channel('budget_watch_${_formatPeriod(period)}');
+    final channelName = 'budget_watch_${userId}_${_formatPeriod(period)}';
+    final channel = _client.channel(channelName);
 
     channel
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: 'budget_groups',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: userId,
+          ),
           callback: (_) => fetch(),
         )
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: 'transactions',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: userId,
+          ),
           callback: (_) => fetch(),
         )
         .subscribe();

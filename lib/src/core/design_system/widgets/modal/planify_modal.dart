@@ -26,93 +26,100 @@ class PlanifyModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Header
-        if (showHeader)
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(width: 40),
-                    Container(
-                      width: 60,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: context.colors.outline.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: Icon(
-                        Icons.close,
-                        color: context.colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
-                ),
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        // Divider
-        if (showHeader)
-          Divider(
-            color: context.colors.outline.withValues(alpha: 0.2),
-            height: 1,
-          ),
-
-        // Conteúdo
-        Padding(
-          padding: padding ?? const EdgeInsets.all(AppSpacing.lg),
-          child: child,
-        ),
-
-        // Botões (se houver ações)
-        if (onConfirm != null || onCancel != null) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-            child: Column(
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          if (showHeader)
+            Column(
               children: [
-                if (onConfirm != null)
-                  PlanifyButton.primary(
-                    label: confirmLabel ?? 'Confirm',
-                    onTap: () {
-                      Navigator.pop(context);
-                      onConfirm?.call();
-                    },
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(width: 40),
+                      Container(
+                        width: 60,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: context.colors.outline.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(
+                          Icons.close,
+                          color: context.colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
-                if (onCancel != null) ...[
-                  const SizedBox(height: AppSpacing.md),
-                  PlanifyButton.outline(
-                    label: cancelLabel ?? 'Cancel',
-                    onTap: () {
-                      Navigator.pop(context);
-                      onCancel?.call();
-                    },
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.sm,
                   ),
-                ],
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
             ),
+          // Divider
+          if (showHeader)
+            Divider(
+              color: context.colors.outline.withValues(alpha: 0.2),
+              height: 1,
+            ),
+
+          // Conteúdo
+          Flexible(
+            child: SingleChildScrollView(
+              padding: padding ?? const EdgeInsets.all(AppSpacing.lg),
+              child: child,
+            ),
           ),
-          const SizedBox(height: AppSpacing.lg),
+
+          // Botões (se houver ações)
+          if (onConfirm != null || onCancel != null) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              child: Column(
+                children: [
+                  if (onConfirm != null)
+                    PlanifyButton.primary(
+                      label: confirmLabel ?? 'Confirm',
+                      onTap: () {
+                        Navigator.pop(context);
+                        onConfirm?.call();
+                      },
+                    ),
+                  if (onCancel != null) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    PlanifyButton.outline(
+                      label: cancelLabel ?? 'Cancel',
+                      onTap: () {
+                        Navigator.pop(context);
+                        onCancel?.call();
+                      },
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
@@ -220,6 +227,7 @@ Future<T?> showPlanifyModal<T>(
     ),
     backgroundColor: context.colors.surface,
     isScrollControlled: true,
+    useSafeArea: true,
     showDragHandle: false,
   );
 }

@@ -37,7 +37,7 @@ class CreateTransactionCategoryPickerContent extends StatelessWidget {
               child: PlanifySelectableItem(
                 label: cat.name,
                 isSelected: selected?.id == cat.id,
-                icon: Icons.label_outline,
+                icon: AppIconMap.fromString(cat.icon),
                 iconColor: _parseColor(cat.color),
                 onTap: () => Navigator.of(context).pop(cat),
               ),
