@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:planify/src/features/auth/presentation/bloc/auth_state.dart';
+import 'package:planify/src/features/auth/presentation/widgets/others_sign_in_widget.dart';
 
 import '../auth_dimens.dart';
 import '../auth_strings.dart';
@@ -30,11 +32,11 @@ class _LoginSignUpWidgetState extends State<LoginSignUpWidget> {
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     context.read<AuthBloc>().add(
-          SignUpWithEmailRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-          ),
-        );
+      SignUpWithEmailRequested(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ),
+    );
   }
 
   @override
@@ -46,108 +48,40 @@ class _LoginSignUpWidgetState extends State<LoginSignUpWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: AuthDimens.spacingXLarge),
-            Text(
-              AuthStrings.signUpPageTitle,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: AuthDimens.spacingSmall),
-            Text(
-              AuthStrings.signUpPageSubtitle,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: AuthDimens.spacingLarge),
-            TextFormField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: AuthStrings.emailLabel,
-                hintText: AuthStrings.emailHint,
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Informe seu e-mail';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: AuthDimens.spacing),
-            TextFormField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: AuthStrings.passwordLabel,
-                hintText: AuthStrings.passwordHint,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Informe sua senha';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: AuthDimens.spacing),
-            TextFormField(
-              controller: _confirmPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: AuthStrings.confirmPasswordLabel,
-                hintText: AuthStrings.confirmPasswordHint,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Confirme sua senha';
-                }
-                if (value != _passwordController.text) {
-                  return AuthStrings.passwordMismatchError;
-                }
-                return null;
-              },
+            _Header(),
+            _Input(
+              _emailController,
+              _passwordController,
+              _confirmPasswordController,
             ),
             const SizedBox(height: AuthDimens.spacingLarge),
             SizedBox(
               height: AuthDimens.buttonHeight,
-              child: FilledButton(
-                onPressed: _submit,
-                child: const Text(AuthStrings.createAccountButton),
+              child: BlocSelector<AuthBloc, AuthState, AuthState>(
+                selector: (state) => state,
+                builder: (context, state) {
+                  return FilledButton(
+                    onPressed: _submit,
+                    child: state is AuthSignUpLoading
+                        ? const CircularProgressIndicator()
+                        : Text(AuthStrings.createAccountButton),
+                  );
+                },
               ),
             ),
             const SizedBox(height: AuthDimens.spacing),
             SizedBox(
               height: AuthDimens.buttonHeight,
               child: TextButton(
-                onPressed: () => context
-                    .read<AuthBloc>()
-                    .add(const SignUpModeCancelled()),
+                onPressed: () =>
+                    context.read<AuthBloc>().add(const SignUpModeCancelled()),
                 child: const Text(AuthStrings.backToLoginButton),
               ),
             ),
             const SizedBox(height: AuthDimens.spacingLarge),
             _OrDivider(),
             const SizedBox(height: AuthDimens.spacingLarge),
-            SizedBox(
-              height: AuthDimens.buttonHeight,
-              child: OutlinedButton.icon(
-                onPressed: () => context
-                    .read<AuthBloc>()
-                    .add(const SignInWithGoogleRequested()),
-                icon: const Icon(Icons.g_mobiledata),
-                label: const Text(AuthStrings.googleButton),
-              ),
-            ),
-            const SizedBox(height: AuthDimens.spacing),
-            SizedBox(
-              height: AuthDimens.buttonHeight,
-              child: OutlinedButton.icon(
-                onPressed: () => context
-                    .read<AuthBloc>()
-                    .add(const SignInWithAppleRequested()),
-                icon: const Icon(Icons.apple),
-                label: const Text(AuthStrings.appleButton),
-              ),
-            ),
+            OthersSignInWidget(),
           ],
         ),
       ),
@@ -171,6 +105,98 @@ class _OrDivider extends StatelessWidget {
           ),
         ),
         const Expanded(child: Divider()),
+      ],
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: AuthDimens.spacingXLarge),
+        Text(
+          AuthStrings.signUpPageTitle,
+          style: Theme.of(
+            context,
+          ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: AuthDimens.spacingSmall),
+        Text(
+          AuthStrings.signUpPageSubtitle,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: AuthDimens.spacingLarge),
+      ],
+    );
+  }
+}
+
+class _Input extends StatelessWidget {
+  const _Input(
+    this._emailController,
+    this._passwordController,
+    this._confirmPasswordController,
+  );
+
+  final TextEditingController _emailController;
+  final TextEditingController _passwordController;
+  final TextEditingController _confirmPasswordController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            labelText: AuthStrings.emailLabel,
+            hintText: AuthStrings.emailHint,
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Informe seu e-mail';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: AuthDimens.spacing),
+        TextFormField(
+          controller: _passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: AuthStrings.passwordLabel,
+            hintText: AuthStrings.passwordHint,
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Informe sua senha';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: AuthDimens.spacing),
+        TextFormField(
+          controller: _confirmPasswordController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            labelText: AuthStrings.confirmPasswordLabel,
+            hintText: AuthStrings.confirmPasswordHint,
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Confirme sua senha';
+            }
+            if (value != _passwordController.text) {
+              return AuthStrings.passwordMismatchError;
+            }
+            return null;
+          },
+        ),
       ],
     );
   }

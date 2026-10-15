@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:planify/src/core/router/routes.dart';
+import 'package:planify/src/features/auth/presentation/widgets/others_sign_in_widget.dart';
 
 import '../auth_dimens.dart';
 import '../auth_strings.dart';
@@ -113,27 +114,7 @@ class _LoginInitialWidgetState extends State<LoginInitialWidget> {
             const SizedBox(height: AuthDimens.spacingLarge),
             _OrDivider(),
             const SizedBox(height: AuthDimens.spacingLarge),
-            SizedBox(
-              height: AuthDimens.buttonHeight,
-              child: OutlinedButton.icon(
-                onPressed: () => context.read<AuthBloc>().add(
-                  const SignInWithGoogleRequested(),
-                ),
-                icon: const Icon(Icons.g_mobiledata),
-                label: const Text(AuthStrings.googleButton),
-              ),
-            ),
-            const SizedBox(height: AuthDimens.spacing),
-            SizedBox(
-              height: AuthDimens.buttonHeight,
-              child: OutlinedButton.icon(
-                onPressed: () => context.read<AuthBloc>().add(
-                  const SignInWithAppleRequested(),
-                ),
-                icon: const Icon(Icons.apple),
-                label: const Text(AuthStrings.appleButton),
-              ),
-            ),
+            OthersSignInWidget(),
           ],
         ),
       ),

@@ -15,6 +15,10 @@ final class AuthLoading extends AuthState {
   const AuthLoading();
 }
 
+final class AuthSignUpLoading extends AuthState {
+  const AuthSignUpLoading();
+}
+
 final class AuthSignUpMode extends AuthState {
   const AuthSignUpMode();
 }
@@ -23,6 +27,15 @@ final class AuthSignUpMode extends AuthState {
 /// A navegação em caso de sucesso é tratada pelo [AuthChangeNotifier] + GoRouter redirect.
 final class AuthError extends AuthState {
   const AuthError(this.message);
+
+  final String message;
+
+  @override
+  List<Object?> get props => [message];
+}
+
+final class AuthSignUpError extends AuthState {
+  const AuthSignUpError(this.message);
 
   final String message;
 

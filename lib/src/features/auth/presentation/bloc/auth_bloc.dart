@@ -73,10 +73,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _onSignUpModeEntered(
-    SignUpModeEntered event,
-    Emitter<AuthState> emit,
-  ) {
+  void _onSignUpModeEntered(SignUpModeEntered event, Emitter<AuthState> emit) {
     emit(const AuthSignUpMode());
   }
 
@@ -91,15 +88,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     SignUpWithEmailRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(const AuthLoading());
+    emit(const AuthSignUpLoading());
     try {
       await _repository.signUpWithEmail(event.email, event.password);
       // Sucesso: AuthChangeNotifier detecta a nova sessão e o GoRouter
       // redireciona automaticamente. Não é necessário emitir estado aqui.
     } on AuthException catch (e) {
-      emit(AuthError(e.message));
+      emit(AuthSignUpError(e.message));
     } catch (_) {
-      emit(const AuthError('Ocorreu um erro inesperado. Tente novamente.'));
+      emit(
+        const AuthSignUpError('Ocorreu um erro inesperado. Tente novamente.'),
+      );
     }
   }
 }
