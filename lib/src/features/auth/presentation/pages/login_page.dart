@@ -16,11 +16,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<AuthBloc>(),
-      child: const Scaffold(
-        body: SafeArea(
-          child: _LoginBody(),
-        ),
-      ),
+      child: const Scaffold(body: SafeArea(child: _LoginBody())),
     );
   }
 }
@@ -36,7 +32,9 @@ class _LoginBody extends StatelessWidget {
           AuthInitial() => const LoginInitialWidget(),
           AuthSignUpMode() => const LoginSignUpWidget(),
           AuthLoading() => const LoginLoadingWidget(),
-          AuthError(:final message) => LoginErrorWidget(message: message),
+          AuthError(:final failure) => LoginErrorWidget(
+            message: failure.message,
+          ),
         };
       },
     );

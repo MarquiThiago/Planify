@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:planify/src/core/failures/failures.dart';
 
 import '../../domain/entities/spending_statistics_entity.dart';
 
@@ -39,17 +40,17 @@ final class SpendingStatisticsSuccess extends SpendingStatisticsState {
 
 final class SpendingStatisticsError extends SpendingStatisticsState {
   const SpendingStatisticsError({
-    required this.message,
+    required this.failure,
     required this.year,
     required this.month,
     required this.type,
   });
 
-  final String message;
+  final Failure failure;
   final int year;
   final int month;
   final String type;
 
   @override
-  List<Object?> get props => [message, year, month, type];
+  List<Object?> get props => [failure, year, month, type];
 }

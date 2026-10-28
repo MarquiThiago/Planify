@@ -1,16 +1,19 @@
+import 'package:dartz/dartz.dart';
+import 'package:planify/src/core/failures/failures.dart';
+
 import '../entities/budget_group_entity.dart';
 
 abstract class BudgetRepository {
-  Future<void> createBudgetGroup({
+  Future<Either<Failure, Unit>> createBudgetGroup({
     required double monthlyIncome,
     required double savingsPct,
     required DateTime period,
     required Map<String, double> categoryAllocations,
   });
 
-  Future<BudgetGroupEntity?> getBudgetGroup(DateTime period);
+  Future<Either<Failure, BudgetGroupEntity?>> getBudgetGroup(DateTime period);
 
-  Stream<BudgetGroupEntity?> watchBudgetGroup(DateTime period);
+  Stream<Either<Failure, BudgetGroupEntity?>> watchBudgetGroup(DateTime period);
 
-  Future<void> deleteBudgetGroup(String groupId);
+  Future<Either<Failure, Unit>> deleteBudgetGroup(String groupId);
 }

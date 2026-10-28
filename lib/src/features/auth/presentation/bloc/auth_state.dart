@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:planify/src/core/failures/failures.dart';
 
 sealed class AuthState extends Equatable {
   const AuthState();
@@ -22,10 +23,10 @@ final class AuthSignUpMode extends AuthState {
 /// Emitido quando um erro ocorre durante o sign-in ou sign-up.
 /// A navegação em caso de sucesso é tratada pelo [AuthChangeNotifier] + GoRouter redirect.
 final class AuthError extends AuthState {
-  const AuthError(this.message);
+  const AuthError(this.failure);
 
-  final String message;
+  final Failure failure;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [failure];
 }

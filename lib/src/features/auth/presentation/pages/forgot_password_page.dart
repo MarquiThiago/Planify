@@ -45,13 +45,16 @@ class _ForgotPasswordView extends StatelessWidget {
             OtpSentSuccess(:final email) => _OtpStep(email: email),
             OtpVerifiedSuccess() => const _NewPasswordStep(),
             PasswordResetSuccess() => const _LoadingStep(),
-            PasswordRecoveryError(:final step, :final email, :final message) =>
+            PasswordRecoveryError(:final step, :final email, :final failure) =>
               switch (step) {
-                RecoveryStep.email => _EmailStep(errorMessage: message),
-                RecoveryStep.otp =>
-                  _OtpStep(email: email ?? '', errorMessage: message),
-                RecoveryStep.newPassword =>
-                  _NewPasswordStep(errorMessage: message),
+                RecoveryStep.email => _EmailStep(errorMessage: failure.message),
+                RecoveryStep.otp => _OtpStep(
+                  email: email ?? '',
+                  errorMessage: failure.message,
+                ),
+                RecoveryStep.newPassword => _NewPasswordStep(
+                  errorMessage: failure.message,
+                ),
               },
           },
         ),
@@ -94,9 +97,9 @@ class _EmailStepState extends State<_EmailStep> {
 
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    context
-        .read<PasswordRecoveryBloc>()
-        .add(SendOtpRequested(_controller.text.trim()));
+    context.read<PasswordRecoveryBloc>().add(
+      SendOtpRequested(_controller.text.trim()),
+    );
   }
 
   @override
@@ -111,10 +114,9 @@ class _EmailStepState extends State<_EmailStep> {
             const SizedBox(height: AuthDimens.spacingLarge),
             Text(
               AuthStrings.forgotPasswordTitle,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AuthDimens.spacingSmall),
             Text(
@@ -141,8 +143,8 @@ class _EmailStepState extends State<_EmailStep> {
               Text(
                 widget.errorMessage!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
             ],
             const SizedBox(height: AuthDimens.spacingLarge),
@@ -196,8 +198,12 @@ class _OtpStepState extends State<_OtpStep> {
 
   @override
   void dispose() {
-    for (final c in _controllers) { c.dispose(); }
-    for (final f in _focusNodes) { f.dispose(); }
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    for (final f in _focusNodes) {
+      f.dispose();
+    }
     super.dispose();
   }
 
@@ -217,16 +223,16 @@ class _OtpStepState extends State<_OtpStep> {
     final otp = _controllers.map((c) => c.text).join();
     if (otp.length < 6) return;
     context.read<PasswordRecoveryBloc>().add(
-          VerifyOtpRequested(email: widget.email, otp: otp),
-        );
+      VerifyOtpRequested(email: widget.email, otp: otp),
+    );
   }
 
   void _resend() {
-    for (final c in _controllers) { c.clear(); }
+    for (final c in _controllers) {
+      c.clear();
+    }
     _focusNodes.first.requestFocus();
-    context
-        .read<PasswordRecoveryBloc>()
-        .add(SendOtpRequested(widget.email));
+    context.read<PasswordRecoveryBloc>().add(SendOtpRequested(widget.email));
   }
 
   @override
@@ -241,8 +247,9 @@ class _OtpStepState extends State<_OtpStep> {
           const SizedBox(height: AuthDimens.spacingLarge),
           Text(
             AuthStrings.otpTitle,
-            style: theme.textTheme.headlineMedium
-                ?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: AuthDimens.spacingSmall),
           Text.rich(
@@ -252,8 +259,9 @@ class _OtpStepState extends State<_OtpStep> {
               children: [
                 TextSpan(
                   text: widget.email,
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -327,10 +335,9 @@ class _OtpBox extends StatelessWidget {
         keyboardType: TextInputType.number,
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         textAlign: TextAlign.center,
-        style: Theme.of(context)
-            .textTheme
-            .titleLarge
-            ?.copyWith(fontWeight: FontWeight.bold),
+        style: Theme.of(
+          context,
+        ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         decoration: InputDecoration(
           counterText: '',
           contentPadding: EdgeInsets.zero,
@@ -374,9 +381,9 @@ class _NewPasswordStepState extends State<_NewPasswordStep> {
 
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    context
-        .read<PasswordRecoveryBloc>()
-        .add(SetNewPasswordRequested(_passwordController.text));
+    context.read<PasswordRecoveryBloc>().add(
+      SetNewPasswordRequested(_passwordController.text),
+    );
   }
 
   @override
@@ -393,8 +400,9 @@ class _NewPasswordStepState extends State<_NewPasswordStep> {
             const SizedBox(height: AuthDimens.spacingLarge),
             Text(
               AuthStrings.newPasswordTitle,
-              style: theme.textTheme.headlineMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: AuthDimens.spacingSmall),
             Text(

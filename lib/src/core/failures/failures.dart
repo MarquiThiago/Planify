@@ -29,3 +29,7 @@ final class DatabaseFailure extends Failure {
 final class SessionExpiredFailure extends Failure {
   const SessionExpiredFailure(super.message, super.code);
 }
+
+final class UnexpectedFailure extends Failure {
+  const UnexpectedFailure(super.message, super.code);
+}

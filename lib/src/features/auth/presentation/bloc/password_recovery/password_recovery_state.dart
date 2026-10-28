@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:planify/src/core/failures/failures.dart';
 
 enum RecoveryStep { email, otp, newPassword }
 
@@ -42,17 +43,17 @@ final class PasswordResetSuccess extends PasswordRecoveryState {
 
 final class PasswordRecoveryError extends PasswordRecoveryState {
   const PasswordRecoveryError({
-    required this.message,
+    required this.failure,
     required this.step,
     this.email,
   });
 
-  final String message;
+  final Failure failure;
   final RecoveryStep step;
 
   /// Preserved so the correct step widget can be re-rendered with context.
   final String? email;
 
   @override
-  List<Object?> get props => [message, step, email];
+  List<Object?> get props => [failure, step, email];
 }

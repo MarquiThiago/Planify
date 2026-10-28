@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:planify/src/core/failures/failures.dart';
 
 import '../../domain/repository/account_repository.dart';
 import 'account_event.dart';
@@ -17,12 +18,11 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     Emitter<AccountState> emit,
   ) async {
     emit(const AccountLoading());
-    try {
-      final accounts = await _repository.getAccounts();
-      emit(AccountSuccess(accounts));
-    } catch (e) {
-      emit(AccountError(e.toString()));
-    }
+    final result = await _repository.getAccounts();
+    result.fold(
+      (failure) => emit(AccountError(failure)),
+      (accounts) => emit(AccountSuccess(accounts)),
+    );
   }
 
   Future<void> _onAccountsWatchRequested(
@@ -32,8 +32,12 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     emit(const AccountLoading());
     await emit.forEach(
       _repository.watchAccounts(),
-      onData: AccountSuccess.new,
-      onError: (error, _) => AccountError(error.toString()),
+      onData: (result) => result.fold(
+        (failure) => AccountError(failure),
+        (accounts) => AccountSuccess(accounts),
+      ),
+      onError: (error, _) =>
+          AccountError(UnexpectedFailure(error.toString(), null)),
     );
   }
 }

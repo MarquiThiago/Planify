@@ -1,10 +1,13 @@
+import 'package:dartz/dartz.dart';
+import 'package:planify/src/core/failures/failures.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repository/auth_repository.dart';
+import '../../../../core/repository_base/repository_base.dart';
 import '../models/user_model.dart';
 
-class AuthRepositoryImpl implements AuthRepository {
+class AuthRepositoryImpl with RepositoryBase implements AuthRepository {
   AuthRepositoryImpl(this._client);
 
   final SupabaseClient _client;
@@ -14,47 +17,76 @@ class AuthRepositoryImpl implements AuthRepository {
   static const _redirectUrl = 'io.supabase.planify://login-callback';
 
   @override
-  Future<UserEntity> signInWithEmail(String email, String password) async {
-    final response = await _client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
-    final user = response.user;
-    if (user == null) throw Exception('Falha na autenticação.');
-    return UserModel.fromSupabaseUser(user).toEntity();
-  }
+  Future<Either<Failure, UserEntity>> signInWithEmail(
+    String email,
+    String password,
+  ) =>
+      safeCall<UserEntity>(
+        () async {
+          final response = await _client.auth.signInWithPassword(
+            email: email,
+            password: password,
+          );
+          final user = response.user;
+          if (user == null) throw Exception('Falha ao autenticar usuário.');
+          return UserModel.fromSupabaseUser(user).toEntity();
+        },
+        operationName: 'AuthRepository.signInWithEmail',
+      );
 
   @override
-  Future<UserEntity> signUpWithEmail(String email, String password) async {
-    final response = await _client.auth.signUp(
-      email: email,
-      password: password,
-    );
-    final user = response.user;
-    if (user == null) throw Exception('Falha ao criar conta.');
-    return UserModel.fromSupabaseUser(user).toEntity();
-  }
+  Future<Either<Failure, UserEntity>> signUpWithEmail(
+    String email,
+    String password,
+  ) =>
+      safeCall<UserEntity>(
+        () async {
+          final response = await _client.auth.signUp(
+            email: email,
+            password: password,
+          );
+          final user = response.user;
+          if (user == null) throw Exception('Falha ao criar conta.');
+          return UserModel.fromSupabaseUser(user).toEntity();
+        },
+        operationName: 'AuthRepository.signUpWithEmail',
+      );
 
   @override
-  Future<void> signInWithGoogle() async {
-    await _client.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: _redirectUrl,
-    );
-  }
+  Future<Either<Failure, Unit>> signInWithGoogle() =>
+      safeCall<Unit>(
+        () async {
+          await _client.auth.signInWithOAuth(
+            OAuthProvider.google,
+            redirectTo: _redirectUrl,
+          );
+          return unit;
+        },
+        operationName: 'AuthRepository.signInWithGoogle',
+      );
 
   @override
-  Future<void> signInWithApple() async {
-    await _client.auth.signInWithOAuth(
-      OAuthProvider.apple,
-      redirectTo: _redirectUrl,
-    );
-  }
+  Future<Either<Failure, Unit>> signInWithApple() =>
+      safeCall<Unit>(
+        () async {
+          await _client.auth.signInWithOAuth(
+            OAuthProvider.apple,
+            redirectTo: _redirectUrl,
+          );
+          return unit;
+        },
+        operationName: 'AuthRepository.signInWithApple',
+      );
 
   @override
-  Future<void> signOut() async {
-    await _client.auth.signOut();
-  }
+  Future<Either<Failure, Unit>> signOut() =>
+      safeCall<Unit>(
+        () async {
+          await _client.auth.signOut();
+          return unit;
+        },
+        operationName: 'AuthRepository.signOut',
+      );
 
   @override
   UserEntity? getCurrentUser() {
@@ -64,25 +96,47 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> sendPasswordRecoveryOtp(String email) async {
-    await _client.auth.signInWithOtp(
-      email: email,
-      shouldCreateUser: false,
-    );
-  }
+  Future<Either<Failure, Unit>> sendPasswordRecoveryOtp(String email) =>
+      safeCall<Unit>(
+        () async {
+          await _client.auth.signInWithOtp(
+            email: email,
+            shouldCreateUser: false,
+          );
+          return unit;
+        },
+        operationName: 'AuthRepository.sendPasswordRecoveryOtp',
+        context: {'email': email},
+      );
 
   @override
-  Future<void> verifyPasswordRecoveryOtp(String email, String otp) async {
-    await _client.auth.verifyOTP(
-      email: email,
-      token: otp,
-      type: OtpType.email,
-    );
-  }
+  Future<Either<Failure, Unit>> verifyPasswordRecoveryOtp(
+    String email,
+    String otp,
+  ) =>
+      safeCall<Unit>(
+        () async {
+          await _client.auth.verifyOTP(
+            email: email,
+            token: otp,
+            type: OtpType.email,
+          );
+          return unit;
+        },
+        operationName: 'AuthRepository.verifyPasswordRecoveryOtp',
+        context: {'email': email},
+      );
 
   @override
-  Future<void> updatePasswordAndSignOut(String newPassword) async {
-    await _client.auth.updateUser(UserAttributes(password: newPassword));
-    await _client.auth.signOut();
-  }
+  Future<Either<Failure, Unit>> updatePasswordAndSignOut(
+    String newPassword,
+  ) =>
+      safeCall<Unit>(
+        () async {
+          await _client.auth.updateUser(UserAttributes(password: newPassword));
+          await _client.auth.signOut();
+          return unit;
+        },
+        operationName: 'AuthRepository.updatePasswordAndSignOut',
+      );
 }

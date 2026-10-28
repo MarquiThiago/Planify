@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:planify/src/core/failures/failures.dart';
 
 import '../../domain/entities/account_entity.dart';
 
@@ -27,10 +28,10 @@ final class AccountSuccess extends AccountState {
 }
 
 final class AccountError extends AccountState {
-  const AccountError(this.message);
+  const AccountError(this.failure);
 
-  final String message;
+  final Failure failure;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [failure];
 }

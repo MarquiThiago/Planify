@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:planify/src/core/failures/failures.dart';
 
 import '../../../../transactions/features/create_transaction/domain/entities/category_entity.dart';
 
@@ -63,7 +64,8 @@ final class BudgetCreationStep3 extends BudgetCreationState {
 
   double get totalAllocated => allocations.values.fold(0, (sum, v) => sum + v);
   double get remainingAmount => spendableAmount - totalAllocated;
-  bool get canSubmit => remainingAmount >= 0 && allocations.values.every((v) => v > 0);
+  bool get canSubmit =>
+      remainingAmount >= 0 && allocations.values.every((v) => v > 0);
 
   BudgetCreationStep3 copyWith({Map<String, double>? allocations}) {
     return BudgetCreationStep3(
@@ -86,10 +88,10 @@ final class BudgetCreationSuccess extends BudgetCreationState {
 }
 
 final class BudgetCreationError extends BudgetCreationState {
-  const BudgetCreationError(this.message);
+  const BudgetCreationError(this.failure);
 
-  final String message;
+  final Failure failure;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [failure];
 }

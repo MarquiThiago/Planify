@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:planify/src/core/failures/failures.dart';
 import 'package:planify/src/features/accounts/domain/entities/account_entity.dart';
 
 import '../../domain/entities/category_entity.dart';
@@ -42,7 +43,7 @@ final class CreateTransactionReady extends CreateTransactionState {
   final DateTime selectedDateTime;
   final String notes;
   final bool isSubmitting;
-  final String? submitError;
+  final Failure? submitError;
 
   List<CategoryEntity> get filteredCategories =>
       allCategories.where((c) => c.type == type).toList();
@@ -73,7 +74,7 @@ final class CreateTransactionReady extends CreateTransactionState {
     DateTime? selectedDateTime,
     String? notes,
     bool? isSubmitting,
-    String? submitError,
+    Failure? submitError,
     bool clearSubmitError = false,
   }) {
     return CreateTransactionReady(
@@ -113,10 +114,10 @@ final class CreateTransactionSuccess extends CreateTransactionState {
 }
 
 final class CreateTransactionError extends CreateTransactionState {
-  const CreateTransactionError(this.message);
+  const CreateTransactionError(this.failure);
 
-  final String message;
+  final Failure failure;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [failure];
 }

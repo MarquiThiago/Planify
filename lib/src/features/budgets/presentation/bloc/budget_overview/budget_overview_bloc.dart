@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:planify/src/core/failures/failures.dart';
 
 import '../../../domain/repository/budget_repository.dart';
 import 'budget_overview_event.dart';
@@ -19,9 +20,13 @@ class BudgetOverviewBloc extends Bloc<BudgetOverviewEvent, BudgetOverviewState> 
     emit(const BudgetOverviewLoading());
     await emit.forEach(
       _repository.watchBudgetGroup(event.period),
-      onData: (group) =>
-          group == null ? const BudgetOverviewEmpty() : BudgetOverviewSuccess(group),
-      onError: (err, st) => const BudgetOverviewError('Erro ao carregar orçamento.'),
+      onData: (result) => result.fold(
+        (failure) => BudgetOverviewError(failure),
+        (group) =>
+            group == null ? const BudgetOverviewEmpty() : BudgetOverviewSuccess(group),
+      ),
+      onError: (error, _) =>
+          BudgetOverviewError(UnexpectedFailure(error.toString(), null)),
     );
   }
 
@@ -29,12 +34,12 @@ class BudgetOverviewBloc extends Bloc<BudgetOverviewEvent, BudgetOverviewState> 
     BudgetOverviewDeleteRequested event,
     Emitter<BudgetOverviewState> emit,
   ) async {
-    try {
-      await _repository.deleteBudgetGroup(event.groupId);
+    final result = await _repository.deleteBudgetGroup(event.groupId);
+    result.fold(
+      (failure) => emit(BudgetOverviewError(failure)),
       // O stream detecta o DELETE na tabela budget_groups via Realtime
-      // e emite BudgetOverviewEmpty automaticamente
-    } catch (_) {
-      emit(const BudgetOverviewError('Erro ao excluir orçamento.'));
-    }
+      // e emite BudgetOverviewEmpty automaticamente.
+      (_) => null,
+    );
   }
 }

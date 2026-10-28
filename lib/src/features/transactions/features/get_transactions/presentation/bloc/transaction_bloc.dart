@@ -16,9 +16,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final GetTransactionRepository _repository;
 
   ({int year, int month}) get _currentPeriod => switch (state) {
-        TransactionLoading(:final year, :final month) => (year: year, month: month),
-        TransactionSuccess(:final year, :final month) => (year: year, month: month),
-        TransactionError(:final year, :final month) => (year: year, month: month),
+        TransactionLoading(:final year, :final month) =>
+          (year: year, month: month),
+        TransactionSuccess(:final year, :final month) =>
+          (year: year, month: month),
+        TransactionError(:final year, :final month) =>
+          (year: year, month: month),
         TransactionInitial() => (
             year: DateTime.now().year,
             month: DateTime.now().month,
@@ -30,21 +33,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     emit(TransactionLoading(year: event.year, month: event.month));
-    try {
-      final transactions =
-          await _repository.getTransactions(event.year, event.month);
-      emit(TransactionSuccess(
+    final result = await _repository.getTransactions(event.year, event.month);
+    result.fold(
+      (failure) => emit(TransactionError(
+        failure: failure,
+        year: event.year,
+        month: event.month,
+      )),
+      (transactions) => emit(TransactionSuccess(
         transactions: transactions,
         year: event.year,
         month: event.month,
-      ));
-    } catch (e) {
-      emit(TransactionError(
-        message: e.toString(),
-        year: event.year,
-        month: event.month,
-      ));
-    }
+      )),
+    );
   }
 
   Future<void> _onPreviousMonth(

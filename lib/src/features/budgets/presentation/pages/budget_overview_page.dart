@@ -19,8 +19,9 @@ class BudgetOverviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<BudgetOverviewBloc>()
-        ..add(BudgetOverviewLoadRequested(period: DateTime.now())),
+      create: (_) =>
+          getIt<BudgetOverviewBloc>()
+            ..add(BudgetOverviewLoadRequested(period: DateTime.now())),
       child: const _BudgetOverviewView(),
     );
   }
@@ -37,7 +38,9 @@ class _BudgetOverviewView extends StatelessWidget {
         actions: [
           BlocBuilder<BudgetOverviewBloc, BudgetOverviewState>(
             builder: (context, state) {
-              if (state is! BudgetOverviewSuccess) return const SizedBox.shrink();
+              if (state is! BudgetOverviewSuccess) {
+                return const SizedBox.shrink();
+              }
               return IconButton(
                 icon: const Icon(Icons.delete_outline),
                 tooltip: BudgetStrings.overviewDeleteButton,
@@ -52,13 +55,15 @@ class _BudgetOverviewView extends StatelessWidget {
           return switch (state) {
             BudgetOverviewInitial() => const SizedBox.shrink(),
             BudgetOverviewLoading() => const BudgetOverviewLoadingWidget(),
-            BudgetOverviewSuccess(:final group) =>
-              BudgetOverviewSuccessWidget(group: group),
+            BudgetOverviewSuccess(:final group) => BudgetOverviewSuccessWidget(
+              group: group,
+            ),
             BudgetOverviewEmpty() => BudgetOverviewEmptyWidget(
-                onCreateTap: () => context.push(Routes.budgetCreation.path),
-              ),
-            BudgetOverviewError(:final message) =>
-              BudgetOverviewErrorWidget(message: message),
+              onCreateTap: () => context.push(Routes.budgetCreation.path),
+            ),
+            BudgetOverviewError(:final failure) => BudgetOverviewErrorWidget(
+              message: failure.message,
+            ),
           };
         },
       ),
@@ -70,7 +75,9 @@ class _BudgetOverviewView extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text(BudgetStrings.overviewDeleteButton),
-        content: const Text('Tem certeza que deseja excluir o orçamento deste mês?'),
+        content: const Text(
+          'Tem certeza que deseja excluir o orçamento deste mês?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
@@ -80,11 +87,11 @@ class _BudgetOverviewView extends StatelessWidget {
             onPressed: () {
               Navigator.of(dialogContext).pop();
               context.read<BudgetOverviewBloc>().add(
-                    BudgetOverviewDeleteRequested(
-                      groupId: groupId,
-                      period: DateTime.now(),
-                    ),
-                  );
+                BudgetOverviewDeleteRequested(
+                  groupId: groupId,
+                  period: DateTime.now(),
+                ),
+              );
             },
             child: const Text('Excluir'),
           ),

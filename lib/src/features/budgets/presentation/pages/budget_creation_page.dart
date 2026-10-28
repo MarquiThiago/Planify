@@ -26,13 +26,13 @@ class _BudgetCreationView extends StatelessWidget {
   const _BudgetCreationView();
 
   int _stepIndex(BudgetCreationState state) => switch (state) {
-        BudgetCreationStep1() => 0,
-        BudgetCreationStep2() => 1,
-        BudgetCreationStep3() => 2,
-        BudgetCreationLoading() => 0,
-        BudgetCreationSuccess() => 0,
-        BudgetCreationError() => 0,
-      };
+    BudgetCreationStep1() => 0,
+    BudgetCreationStep2() => 1,
+    BudgetCreationStep3() => 2,
+    BudgetCreationLoading() => 0,
+    BudgetCreationSuccess() => 0,
+    BudgetCreationError() => 0,
+  };
 
   bool _showStepIndicator(BudgetCreationState state) =>
       state is BudgetCreationStep1 ||
@@ -48,7 +48,7 @@ class _BudgetCreationView extends StatelessWidget {
         } else if (state is BudgetCreationError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(state.failure.message),
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
@@ -68,8 +68,9 @@ class _BudgetCreationView extends StatelessWidget {
               BudgetCreationStep1() => const StepIncomeWidget(),
               BudgetCreationStep2 s => StepCategoriesWidget(state: s),
               BudgetCreationStep3 s => StepAllocationWidget(state: s),
-              BudgetCreationLoading() =>
-                const Center(child: CircularProgressIndicator()),
+              BudgetCreationLoading() => const Center(
+                child: CircularProgressIndicator(),
+              ),
               BudgetCreationSuccess() => const SizedBox.shrink(),
               BudgetCreationError() => const StepIncomeWidget(),
             },
@@ -85,9 +86,9 @@ class _BudgetCreationView extends StatelessWidget {
     }
     return IconButton(
       icon: const Icon(Icons.arrow_back),
-      onPressed: () => context
-          .read<BudgetCreationBloc>()
-          .add(const BudgetCreationBackPressed()),
+      onPressed: () => context.read<BudgetCreationBloc>().add(
+        const BudgetCreationBackPressed(),
+      ),
     );
   }
 }
@@ -102,9 +103,6 @@ class _StepIndicator extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LinearProgressIndicator(
-      value: (currentStep + 1) / 3,
-      minHeight: 4,
-    );
+    return LinearProgressIndicator(value: (currentStep + 1) / 3, minHeight: 4);
   }
 }
