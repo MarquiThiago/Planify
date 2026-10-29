@@ -59,10 +59,13 @@ class _CreateTransactionSheetState extends State<_CreateTransactionSheet> {
   Widget build(BuildContext context) {
     return BlocConsumer<CreateTransactionBloc, CreateTransactionState>(
       listener: (context, state) {
-        if (state is CreateTransactionReady && state.submitError != null) {
+        final submitError = state is CreateTransactionReady
+            ? state.submitError
+            : null;
+        if (state is CreateTransactionReady && submitError != null) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(state.submitError!)));
+          ).showSnackBar(SnackBar(content: Text(submitError.message)));
         }
         if (state is CreateTransactionSuccess) {
           Navigator.of(context).pop(true);
@@ -76,8 +79,8 @@ class _CreateTransactionSheetState extends State<_CreateTransactionSheet> {
           notesController: _notesController,
           amountController: _amountController,
         ),
-        CreateTransactionError(:final message) => CreateTransactionErrorContent(
-          message: message,
+        CreateTransactionError(:final failure) => CreateTransactionErrorContent(
+          message: failure.message,
         ),
         CreateTransactionSuccess() => const SizedBox.shrink(),
       },

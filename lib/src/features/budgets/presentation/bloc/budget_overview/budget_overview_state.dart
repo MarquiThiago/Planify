@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:planify/src/core/failures/failures.dart';
 
 import '../../../domain/entities/budget_group_entity.dart';
 
@@ -31,10 +32,10 @@ final class BudgetOverviewEmpty extends BudgetOverviewState {
 }
 
 final class BudgetOverviewError extends BudgetOverviewState {
-  const BudgetOverviewError(this.message);
+  const BudgetOverviewError(this.failure);
 
-  final String message;
+  final Failure failure;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [failure];
 }

@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 
 import '../../domain/repository/auth_repository.dart';
 import 'auth_event.dart';
@@ -23,15 +22,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    try {
-      await _repository.signInWithEmail(event.email, event.password);
+    final result = await _repository.signInWithEmail(event.email, event.password);
+    result.fold(
+      (failure) => emit(AuthError(failure)),
       // Sucesso: AuthChangeNotifier detecta a nova sessão e o GoRouter
       // redireciona automaticamente. Não é necessário emitir estado aqui.
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
-    } catch (_) {
-      emit(const AuthError('Ocorreu um erro inesperado. Tente novamente.'));
-    }
+      (_) => null,
+    );
   }
 
   Future<void> _onSignInWithGoogle(
@@ -39,14 +36,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    try {
-      await _repository.signInWithGoogle();
+    final result = await _repository.signInWithGoogle();
+    result.fold(
+      (failure) => emit(AuthError(failure)),
       // Browser aberto com sucesso — volta ao estado inicial enquanto
       // o usuário autentica. O callback via deep link completa o fluxo.
-      emit(const AuthInitial());
-    } catch (_) {
-      emit(const AuthError('Não foi possível abrir o login com Google.'));
-    }
+      (_) => emit(const AuthInitial()),
+    );
   }
 
   Future<void> _onSignInWithApple(
@@ -54,23 +50,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    try {
-      await _repository.signInWithApple();
-      emit(const AuthInitial());
-    } catch (_) {
-      emit(const AuthError('Não foi possível abrir o login com Apple.'));
-    }
+    final result = await _repository.signInWithApple();
+    result.fold(
+      (failure) => emit(AuthError(failure)),
+      (_) => emit(const AuthInitial()),
+    );
   }
 
   Future<void> _onSignOut(
     SignOutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    try {
-      await _repository.signOut();
-    } catch (_) {
-      emit(const AuthError('Não foi possível sair. Tente novamente.'));
-    }
+    final result = await _repository.signOut();
+    result.fold(
+      (failure) => emit(AuthError(failure)),
+      (_) => null, // GoRouter handles redirect on session clear
+    );
   }
 
   void _onSignUpModeEntered(
@@ -92,14 +87,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-    try {
-      await _repository.signUpWithEmail(event.email, event.password);
+    final result = await _repository.signUpWithEmail(event.email, event.password);
+    result.fold(
+      (failure) => emit(AuthError(failure)),
       // Sucesso: AuthChangeNotifier detecta a nova sessão e o GoRouter
       // redireciona automaticamente. Não é necessário emitir estado aqui.
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
-    } catch (_) {
-      emit(const AuthError('Ocorreu um erro inesperado. Tente novamente.'));
-    }
+      (_) => null,
+    );
   }
 }

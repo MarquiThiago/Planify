@@ -1,6 +1,6 @@
-import 'dart:async';
-
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:planify/src/core/failures/failures.dart';
 
 import '../../domain/repository/spending_statistics_repository.dart';
 import 'spending_statistics_event.dart';
@@ -10,27 +10,33 @@ class SpendingStatisticsBloc
     extends Bloc<SpendingStatisticsEvent, SpendingStatisticsState> {
   SpendingStatisticsBloc(this._repository)
       : super(const SpendingStatisticsInitial()) {
-    on<SpendingStatisticsWatchEvent>(_onWatch);
+    // restartable(): quando um novo SpendingStatisticsWatchEvent chega enquanto
+    // outro ainda está rodando, o emit.forEach anterior é cancelado automaticamente
+    // — junto com a subscription do stream — antes de iniciar o novo.
+    on<SpendingStatisticsWatchEvent>(_onWatch, transformer: restartable());
     on<SpendingStatisticsTypeChangedEvent>(_onTypeChanged);
     on<SpendingStatisticsPreviousMonthEvent>(_onPreviousMonth);
     on<SpendingStatisticsNextMonthEvent>(_onNextMonth);
-    on<SpendingStatisticsDataUpdatedEvent>(_onDataUpdated);
-    on<SpendingStatisticsErrorReceivedEvent>(_onErrorReceived);
   }
 
   final SpendingStatisticsRepository _repository;
-  StreamSubscription<dynamic>? _subscription;
 
   ({int year, int month, String type}) get _currentPeriod => switch (state) {
-        SpendingStatisticsLoading(:final year, :final month, :final type) =>
-          (year: year, month: month, type: type),
+        SpendingStatisticsLoading(:final year, :final month, :final type) => (
+            year: year,
+            month: month,
+            type: type,
+          ),
         SpendingStatisticsSuccess(:final entity) => (
             year: entity.year,
             month: entity.month,
             type: entity.type,
           ),
-        SpendingStatisticsError(:final year, :final month, :final type) =>
-          (year: year, month: month, type: type),
+        SpendingStatisticsError(:final year, :final month, :final type) => (
+            year: year,
+            month: month,
+            type: type,
+          ),
         SpendingStatisticsInitial() => (
             year: DateTime.now().year,
             month: DateTime.now().month,
@@ -42,28 +48,34 @@ class SpendingStatisticsBloc
     SpendingStatisticsWatchEvent event,
     Emitter<SpendingStatisticsState> emit,
   ) async {
-    await _subscription?.cancel();
     emit(SpendingStatisticsLoading(
       year: event.year,
       month: event.month,
       type: event.type,
     ));
 
-    _subscription = _repository
-        .watchSpendingStatistics(
+    await emit.forEach(
+      _repository.watchSpendingStatistics(
+        year: event.year,
+        month: event.month,
+        type: event.type,
+      ),
+      onData: (result) => result.fold(
+        (failure) => SpendingStatisticsError(
+          failure: failure,
           year: event.year,
           month: event.month,
           type: event.type,
-        )
-        .listen(
-          (entity) => add(SpendingStatisticsDataUpdatedEvent(entity)),
-          onError: (Object error) => add(SpendingStatisticsErrorReceivedEvent(
-            message: error.toString(),
-            year: event.year,
-            month: event.month,
-            type: event.type,
-          )),
-        );
+        ),
+        SpendingStatisticsSuccess.new,
+      ),
+      onError: (error, _) => SpendingStatisticsError(
+        failure: UnexpectedFailure(error.toString(), null),
+        year: event.year,
+        month: event.month,
+        type: event.type,
+      ),
+    );
   }
 
   Future<void> _onTypeChanged(
@@ -104,30 +116,5 @@ class SpendingStatisticsBloc
       month: newMonth,
       type: period.type,
     ));
-  }
-
-  Future<void> _onDataUpdated(
-    SpendingStatisticsDataUpdatedEvent event,
-    Emitter<SpendingStatisticsState> emit,
-  ) async {
-    emit(SpendingStatisticsSuccess(event.entity));
-  }
-
-  Future<void> _onErrorReceived(
-    SpendingStatisticsErrorReceivedEvent event,
-    Emitter<SpendingStatisticsState> emit,
-  ) async {
-    emit(SpendingStatisticsError(
-      message: event.message,
-      year: event.year,
-      month: event.month,
-      type: event.type,
-    ));
-  }
-
-  @override
-  Future<void> close() async {
-    await _subscription?.cancel();
-    return super.close();
   }
 }

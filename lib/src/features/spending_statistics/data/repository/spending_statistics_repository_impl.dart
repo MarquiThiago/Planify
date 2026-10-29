@@ -1,3 +1,6 @@
+import 'package:dartz/dartz.dart';
+import 'package:planify/src/core/failures/failures.dart';
+import 'package:planify/src/core/repository_base/repository_base.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entities/category_spending_entity.dart';
@@ -5,29 +8,36 @@ import '../../domain/entities/spending_statistics_entity.dart';
 import '../../domain/repository/spending_statistics_repository.dart';
 import '../models/category_spending_model.dart';
 
-class SpendingStatisticsRepositoryImpl implements SpendingStatisticsRepository {
+class SpendingStatisticsRepositoryImpl
+    with RepositoryBase
+    implements SpendingStatisticsRepository {
   SpendingStatisticsRepositoryImpl(this._client);
 
   final SupabaseClient _client;
 
   @override
-  Stream<SpendingStatisticsEntity> watchSpendingStatistics({
+  Stream<Either<Failure, SpendingStatisticsEntity>> watchSpendingStatistics({
     required int year,
     required int month,
     required String type,
   }) {
     final userId = _client.auth.currentUser!.id;
-
-    return _client
-        .from('transactions')
-        .stream(primaryKey: ['id'])
-        .eq('user_id', userId)
-        .asyncMap((_) => _fetchStatistics(
+    return safeWatch<SpendingStatisticsEntity>(
+      () => _client
+          .from('transactions')
+          .stream(primaryKey: ['id'])
+          .eq('user_id', userId)
+          .asyncMap(
+            (_) => _fetchStatistics(
               userId: userId,
               year: year,
               month: month,
               type: type,
-            ));
+            ),
+          ),
+      operationName: 'SpendingStatisticsRepository.watchSpendingStatistics',
+      context: {'year': year, 'month': month, 'type': type},
+    );
   }
 
   Future<SpendingStatisticsEntity> _fetchStatistics({
@@ -79,14 +89,16 @@ class SpendingStatisticsRepositoryImpl implements SpendingStatisticsRepository {
         grouped.values.fold(0.0, (sum, acc) => sum + acc.totalAmount);
 
     final categories = grouped.values
-        .map((acc) => CategorySpendingEntity(
-              categoryId: acc.categoryId,
-              categoryName: acc.categoryName,
-              categoryColor: acc.categoryColor,
-              totalAmount: acc.totalAmount,
-              percentage:
-                  totalAmount > 0 ? acc.totalAmount / totalAmount : 0.0,
-            ))
+        .map(
+          (acc) => CategorySpendingEntity(
+            categoryId: acc.categoryId,
+            categoryName: acc.categoryName,
+            categoryColor: acc.categoryColor,
+            totalAmount: acc.totalAmount,
+            percentage:
+                totalAmount > 0 ? acc.totalAmount / totalAmount : 0.0,
+          ),
+        )
         .toList()
       ..sort((a, b) => b.totalAmount.compareTo(a.totalAmount));
 

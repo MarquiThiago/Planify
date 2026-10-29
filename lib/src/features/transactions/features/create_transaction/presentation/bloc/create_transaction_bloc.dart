@@ -33,18 +33,24 @@ class CreateTransactionBloc
     Emitter<CreateTransactionState> emit,
   ) async {
     emit(const CreateTransactionLoadingDeps());
-    try {
-      final accounts = await _accountRepository.getAccounts();
-      final categories = await _categoryRepository.getCategories();
-      emit(CreateTransactionReady(
-        accounts: accounts,
+
+    final accountsResult = await _accountRepository.getAccounts();
+    final accountsFailure = accountsResult.fold((f) => f, (_) => null);
+    if (accountsFailure != null) {
+      emit(CreateTransactionError(accountsFailure));
+      return;
+    }
+
+    final categoriesResult = await _categoryRepository.getCategories();
+    categoriesResult.fold(
+      (failure) => emit(CreateTransactionError(failure)),
+      (categories) => emit(CreateTransactionReady(
+        accounts: accountsResult.getOrElse(() => []),
         allCategories: categories,
         type: CreateTransactionStrings.expenseType,
         selectedDateTime: DateTime.now(),
-      ));
-    } catch (e) {
-      emit(CreateTransactionError(e.toString()));
-    }
+      )),
+    );
   }
 
   void _onTypeChanged(
@@ -103,18 +109,17 @@ class CreateTransactionBloc
     if (!ready.canSubmit) return;
 
     emit(ready.copyWith(isSubmitting: true, clearSubmitError: true));
-    try {
-      await _createTransactionRepository.createTransaction(
-        type: ready.type,
-        amount: ready.amountValue,
-        accountId: ready.selectedAccount!.id,
-        categoryId: ready.selectedCategory!.id,
-        date: ready.selectedDateTime,
-        description: ready.notes.trim().isEmpty ? null : ready.notes.trim(),
-      );
-      emit(const CreateTransactionSuccess());
-    } catch (e) {
-      emit(ready.copyWith(isSubmitting: false, submitError: e.toString()));
-    }
+    final result = await _createTransactionRepository.createTransaction(
+      type: ready.type,
+      amount: ready.amountValue,
+      accountId: ready.selectedAccount!.id,
+      categoryId: ready.selectedCategory!.id,
+      date: ready.selectedDateTime,
+      description: ready.notes.trim().isEmpty ? null : ready.notes.trim(),
+    );
+    result.fold(
+      (failure) => emit(ready.copyWith(isSubmitting: false, submitError: failure)),
+      (_) => emit(const CreateTransactionSuccess()),
+    );
   }
 }
