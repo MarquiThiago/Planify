@@ -21,64 +21,66 @@ class BudgetRepositoryImpl with RepositoryBase implements BudgetRepository {
     required double savingsPct,
     required DateTime period,
     required Map<String, double> categoryAllocations,
-  }) =>
-      safeCall<Unit>(
-        () async {
-          final userId = _client.auth.currentUser!.id;
-          final savingsAmount = monthlyIncome * savingsPct / 100;
-          final spendableAmount = monthlyIncome - savingsAmount;
-          final periodStr = _formatPeriod(period);
+  }) => safeCall<Unit>(
+    () async {
+      final userId = _client.auth.currentUser!.id;
+      final savingsAmount = monthlyIncome * savingsPct / 100;
+      final spendableAmount = monthlyIncome - savingsAmount;
+      final periodStr = _formatPeriod(period);
 
-          final groupResponse = await _client
-              .from('budget_groups')
-              .insert({
-                'user_id': userId,
-                'monthly_income': monthlyIncome,
-                'savings_pct': savingsPct,
-                'savings_amount': savingsAmount,
-                'spendable_amount': spendableAmount,
-                'period': periodStr,
-              })
-              .select()
-              .single();
+      final groupResponse = await _client
+          .from('budget_groups')
+          .insert({
+            'user_id': userId,
+            'monthly_income': monthlyIncome,
+            'savings_pct': savingsPct,
+            'savings_amount': savingsAmount,
+            'spendable_amount': spendableAmount,
+            'period': periodStr,
+          })
+          .select()
+          .single();
 
-          final groupId = groupResponse['id'] as String;
+      final groupId = groupResponse['id'] as String;
 
-          await _client.from('budgets').insert(
-                categoryAllocations.entries
-                    .map(
-                      (e) => {
-                        'group_id': groupId,
-                        'user_id': userId,
-                        'category_id': e.key,
-                        'amount': e.value,
-                      },
-                    )
-                    .toList(),
-              );
-          return unit;
-        },
-        operationName: 'BudgetRepository.createBudgetGroup',
-        context: {'period': _formatPeriod(period), 'monthlyIncome': monthlyIncome},
-      );
+      await _client
+          .from('budgets')
+          .insert(
+            categoryAllocations.entries
+                .map(
+                  (e) => {
+                    'group_id': groupId,
+                    'user_id': userId,
+                    'category_id': e.key,
+                    'amount': e.value,
+                  },
+                )
+                .toList(),
+          );
+      return unit;
+    },
+    operationName: 'BudgetRepository.createBudgetGroup',
+    context: {'period': _formatPeriod(period), 'monthlyIncome': monthlyIncome},
+  );
 
   @override
-  Future<Either<Failure, BudgetGroupEntity?>> getBudgetGroup(
-    DateTime period,
-  ) =>
+  Future<Either<Failure, BudgetGroupEntity?>> getBudgetGroup(DateTime period) =>
       safeCall<BudgetGroupEntity?>(
         () async {
-          final response = await _client.rpc(
-            'get_budget_group_with_spent',
-            params: {'p_period': _formatPeriod(period)},
-          ) as List<dynamic>;
+          final response =
+              await _client.rpc(
+                    'get_budget_group_with_spent',
+                    params: {'p_period': _formatPeriod(period)},
+                  )
+                  as List<dynamic>;
 
           if (response.isEmpty) return null;
 
           final rows = response.cast<Map<String, dynamic>>();
           final group = BudgetGroupModel.fromJson(rows.first);
-          final budgets =
-              rows.map((row) => BudgetModel.fromJson(row).toEntity()).toList();
+          final budgets = rows
+              .map((row) => BudgetModel.fromJson(row).toEntity())
+              .toList();
 
           return group.toEntity(budgets);
         },

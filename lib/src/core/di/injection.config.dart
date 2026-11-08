@@ -12,6 +12,7 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:planify/src/core/di/injection.dart' as _i258;
+import 'package:planify/src/core/logging/app_logger.dart' as _i388;
 import 'package:planify/src/core/router/auth_cubit.dart' as _i712;
 import 'package:planify/src/features/accounts/domain/repository/account_repository.dart'
     as _i839;
@@ -91,6 +92,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => getTransactionModule.transactionBloc,
     );
     gh.lazySingleton<_i454.SupabaseClient>(() => coreModule.supabaseClient);
+    gh.lazySingleton<_i388.AppLogger>(() => coreModule.appLogger);
     gh.lazySingleton<_i712.AuthCubit>(() => coreModule.authCubit);
     gh.lazySingleton<_i839.AccountRepository>(
       () => accountModule.accountRepository,

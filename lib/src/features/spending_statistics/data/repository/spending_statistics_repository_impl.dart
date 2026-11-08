@@ -85,22 +85,26 @@ class SpendingStatisticsRepositoryImpl
       }
     }
 
-    final totalAmount =
-        grouped.values.fold(0.0, (sum, acc) => sum + acc.totalAmount);
+    final totalAmount = grouped.values.fold(
+      0.0,
+      (sum, acc) => sum + acc.totalAmount,
+    );
 
-    final categories = grouped.values
-        .map(
-          (acc) => CategorySpendingEntity(
-            categoryId: acc.categoryId,
-            categoryName: acc.categoryName,
-            categoryColor: acc.categoryColor,
-            totalAmount: acc.totalAmount,
-            percentage:
-                totalAmount > 0 ? acc.totalAmount / totalAmount : 0.0,
-          ),
-        )
-        .toList()
-      ..sort((a, b) => b.totalAmount.compareTo(a.totalAmount));
+    final categories =
+        grouped.values
+            .map(
+              (acc) => CategorySpendingEntity(
+                categoryId: acc.categoryId,
+                categoryName: acc.categoryName,
+                categoryColor: acc.categoryColor,
+                totalAmount: acc.totalAmount,
+                percentage: totalAmount > 0
+                    ? acc.totalAmount / totalAmount
+                    : 0.0,
+              ),
+            )
+            .toList()
+          ..sort((a, b) => b.totalAmount.compareTo(a.totalAmount));
 
     return SpendingStatisticsEntity(
       categories: categories,

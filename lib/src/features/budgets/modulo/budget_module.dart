@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../transactions/features/create_transaction/domain/repository/category_repository.dart';
 import '../data/repository/budget_repository_impl.dart';
@@ -11,7 +12,7 @@ import '../presentation/bloc/budget_overview/budget_overview_bloc.dart';
 abstract class BudgetModule {
   @lazySingleton
   BudgetRepository get budgetRepository =>
-      BudgetRepositoryImpl(GetIt.instance());
+      BudgetRepositoryImpl(GetIt.instance<SupabaseClient>());
 
   BudgetOverviewBloc get budgetOverviewBloc =>
       BudgetOverviewBloc(GetIt.instance<BudgetRepository>());
