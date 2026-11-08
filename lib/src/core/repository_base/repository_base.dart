@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../failures/failures.dart';
+import '../logging/app_logger.dart';
 
 mixin RepositoryBase {
   Future<Either<Failure, T>> safeCall<T>(
@@ -15,9 +17,7 @@ mixin RepositoryBase {
       final result = await operation();
       return Right(result);
     } on AuthException catch (e, st) {
-      final failure = _isSessionError(e)
-          ? SessionExpiredFailure(e.message, e.statusCode?.toString())
-          : AuthFailure(e.message, e.statusCode?.toString());
+      final failure = _classifyAuthException(e);
       return _handleFailure(failure, st, operationName, context);
     } on PostgrestException catch (e, st) {
       return _handleFailure(
@@ -53,9 +53,7 @@ mixin RepositoryBase {
         yield Right(result);
       }
     } on AuthException catch (e, st) {
-      final failure = _isSessionError(e)
-          ? SessionExpiredFailure(e.message, e.statusCode?.toString())
-          : AuthFailure(e.message, e.statusCode?.toString());
+      final failure = _classifyAuthException(e);
       yield _handleFailure(failure, st, operationName, context);
     } on PostgrestException catch (e, st) {
       yield _handleFailure(
@@ -81,9 +79,27 @@ mixin RepositoryBase {
     }
   }
 
+  Failure _classifyAuthException(AuthException e) {
+    if (_isNetworkMessage(e.message)) {
+      return NetworkFailure(e.message, null);
+    }
+    if (_isSessionError(e)) {
+      return SessionExpiredFailure(e.message, e.statusCode?.toString());
+    }
+    return AuthFailure(e.message, e.statusCode?.toString());
+  }
+
   bool _isSessionError(AuthException e) {
     const sessionCodes = ['401', '403'];
     return sessionCodes.contains(e.statusCode?.toString());
+  }
+
+  bool _isNetworkMessage(String message) {
+    return message.contains('SocketException') ||
+        message.contains('ClientException') ||
+        message.contains('Failed host lookup') ||
+        message.contains('Connection refused') ||
+        message.contains('Network is unreachable');
   }
 
   Either<Failure, T> _handleFailure<T>(
@@ -92,6 +108,12 @@ mixin RepositoryBase {
     String operationName,
     Map<String, dynamic> context,
   ) {
+    GetIt.instance<AppLogger>().error(
+      operationName,
+      failure: failure,
+      stackTrace: stackTrace ?? StackTrace.current,
+      context: context,
+    );
     return Left(failure);
   }
 }
